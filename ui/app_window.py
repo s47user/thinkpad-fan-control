@@ -311,6 +311,32 @@ button.btn-header-action:hover {
     border-color: rgba(255, 255, 255, 0.20);
     color: #fafafa;
 }
+
+scrolledwindow {
+    background-color: transparent;
+    border: none;
+}
+
+scrolledwindow overshoot.top,
+scrolledwindow overshoot.bottom {
+    background: none;
+}
+
+scrollbar {
+    background-color: transparent;
+    border: none;
+}
+
+scrollbar slider {
+    background-color: rgba(255, 255, 255, 0.14);
+    border-radius: 4px;
+    min-width: 6px;
+    min-height: 24px;
+}
+
+scrollbar slider:hover {
+    background-color: rgba(255, 255, 255, 0.30);
+}
 """
 
 class AppWindow(Gtk.Window):
@@ -431,7 +457,7 @@ class AppWindow(Gtk.Window):
         self._update_perm_banner()
 
         # 3. Quick Telemetry Bar
-        quickbar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=16)
+        quickbar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         quickbar.get_style_context().add_class("quickbar")
         self.quickbar = quickbar
 
@@ -509,16 +535,22 @@ class AppWindow(Gtk.Window):
         workspace.set_margin_left(16)
         workspace.set_margin_right(16)
         self.workspace = workspace
-        root_vbox.pack_start(workspace, True, True, 0)
+
+        # Wrap workspace in a ScrolledWindow so controls never get clipped off-screen
+        scrolled = Gtk.ScrolledWindow()
+        scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scrolled.set_propagate_natural_width(True)
+        scrolled.add(workspace)
+        root_vbox.pack_start(scrolled, True, True, 0)
 
         top_panels = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=14)
-        workspace.pack_start(top_panels, True, True, 0)
+        top_panels.set_hexpand(True)
+        workspace.pack_start(top_panels, False, True, 0)
 
         # Left Panel: Visual Speedometer Gauge Card
         gauge_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
         gauge_card.get_style_context().add_class("panel-card")
-        gauge_card.set_size_request(300, -1)
-        gauge_card.set_vexpand(True)
+        gauge_card.set_size_request(310, -1)
         self.gauge_card = gauge_card
 
         gauge_header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -808,11 +840,6 @@ class AppWindow(Gtk.Window):
         if hasattr(self, "quickbar"):
             self.quickbar.set_margin_left(h_margin)
             self.quickbar.set_margin_right(h_margin)
-
-        if hasattr(self, "gauge_card"):
-            available_w = w - (h_margin * 2) - 14
-            gauge_w = max(280, min(750, int(available_w * 0.35)))
-            self.gauge_card.set_size_request(gauge_w, -1)
 
     def _on_toggle_fullscreen(self, btn=None):
         win = self.get_window()

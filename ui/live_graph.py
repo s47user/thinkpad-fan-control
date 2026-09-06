@@ -35,6 +35,12 @@ class LiveGraph(Gtk.Image):
         self.connect("size-allocate", self._on_size_allocate)
         self.redraw()
 
+    def do_get_preferred_width(self):
+        return (self.min_width, self.min_width)
+
+    def do_get_preferred_height(self):
+        return (self.min_height, self.min_height)
+
     def _on_size_allocate(self, widget, alloc):
         w = max(self.min_width, alloc.width)
         h = max(self.min_height, alloc.height)

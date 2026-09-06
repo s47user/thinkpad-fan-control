@@ -29,6 +29,12 @@ class VisualGauge(Gtk.Image):
         self.connect("size-allocate", self._on_size_allocate)
         self.redraw()
 
+    def do_get_preferred_width(self):
+        return (self.min_width, self.min_width)
+
+    def do_get_preferred_height(self):
+        return (self.min_height, self.min_height)
+
     def _on_size_allocate(self, widget, alloc):
         w = max(self.min_width, alloc.width)
         h = max(self.min_height, alloc.height)
@@ -68,9 +74,9 @@ class VisualGauge(Gtk.Image):
         cr.paint()
 
         cx = w / 2.0
-        cy = h / 2.0 + 4.0
-        radius = min(w * 0.40, h * 0.38, 250.0)
-        scale = max(0.85, radius / 75.0)
+        cy = h / 2.0 + 2.0
+        radius = min(w * 0.38, h * 0.36, 125.0)
+        scale = max(0.90, min(1.30, radius / 95.0))
 
         start_angle = math.pi * 0.75
         end_angle = math.pi * 2.25
