@@ -61,82 +61,164 @@ class VisualGauge(Gtk.Image):
         end_angle = math.pi * 2.25
         total_angle = end_angle - start_angle
 
-        # 1. Background Arc Track
-        cr.set_line_width(12.0)
+        # 1. Outer Concentric Turbine Shroud (Logo Inspired)
+        chamber_r = radius + 14.0
+        cr.set_source_rgba(0.05, 0.06, 0.08, 1.0)
+        cr.arc(cx, cy, chamber_r + 4.0, 0, 2 * math.pi)
+        cr.fill()
+
+        # Outer Machined Chamfer Rim
+        cr.set_line_width(1.5)
+        cr.set_source_rgba(0.18, 0.20, 0.26, 0.7)
+        cr.arc(cx, cy, chamber_r + 4.0, 0, 2 * math.pi)
+        cr.stroke()
+
+        # 2. Perimeter Stator Ticks (36 Ticks around full circumference)
+        fraction = max(0.0, min(1.0, self.current_rpm / float(self.max_rpm)))
+        num_stator_ticks = 36
+        for i in range(num_stator_ticks):
+            tick_angle = (2 * math.pi / num_stator_ticks) * i
+            tick_pct = i / float(num_stator_ticks)
+
+            t_inner = chamber_r + 1.0
+            t_outer = chamber_r + (4.5 if i % 3 == 0 else 3.0)
+
+            x1 = cx + math.cos(tick_angle) * t_inner
+            y1 = cy + math.sin(tick_angle) * t_inner
+            x2 = cx + math.cos(tick_angle) * t_outer
+            y2 = cy + math.sin(tick_angle) * t_outer
+
+            cr.set_line_width(1.2 if i % 3 == 0 else 0.8)
+            # Stator illumination follows current RPM fraction
+            if tick_pct <= fraction and fraction > 0.05:
+                if tick_pct < 0.45:
+                    cr.set_source_rgba(0.0, 0.82, 1.0, 0.9)   # Cyan
+                elif tick_pct < 0.8:
+                    cr.set_source_rgba(0.06, 0.73, 0.50, 0.9)  # Emerald
+                else:
+                    cr.set_source_rgba(0.89, 0.14, 0.10, 0.95) # Crimson
+            else:
+                cr.set_source_rgba(0.20, 0.23, 0.30, 0.35)
+
+            cr.move_to(x1, y1)
+            cr.line_to(x2, y2)
+            cr.stroke()
+
+        # 3. Background Gauge Arc Track
+        cr.set_line_width(10.0)
         cr.set_line_cap(cairo.LINE_CAP_ROUND)
-        cr.set_source_rgba(0.11, 0.12, 0.16, 1.0) # refined dark zinc track
+        cr.set_source_rgba(0.10, 0.11, 0.15, 1.0)
         cr.arc(cx, cy, radius, start_angle, end_angle)
         cr.stroke()
 
-        # 2. Active RPM Arc
-        fraction = max(0.0, min(1.0, self.current_rpm / float(self.max_rpm)))
+        # 4. Active Airflow Velocity Sweep (with Neon Bloom Pass)
         if fraction > 0.01:
             active_angle = start_angle + (total_angle * fraction)
-            if fraction < 0.4:
-                r, g, b = 0.0, 0.82, 1.0 # Cyan
-            elif fraction < 0.7:
+            if fraction < 0.38:
+                r, g, b = 0.0, 0.82, 1.0  # Cyan
+            elif fraction < 0.72:
                 r, g, b = 0.06, 0.73, 0.50 # Emerald
             elif fraction < 0.88:
                 r, g, b = 0.96, 0.62, 0.04 # Amber
             else:
-                r, g, b = 0.89, 0.14, 0.10 # ThinkPad Red
+                r, g, b = 0.89, 0.14, 0.10 # Crimson
 
-            cr.set_source_rgba(r, g, b, 0.95)
-            cr.set_line_width(12.0)
+            # Translucent Neon Bloom Pass
+            cr.set_line_width(16.0)
+            cr.set_source_rgba(r, g, b, 0.22)
             cr.arc(cx, cy, radius, start_angle, active_angle)
             cr.stroke()
 
-        # 3. Radial Tick Marks
+            # Crisp Core Trace Pass
+            cr.set_line_width(9.0)
+            cr.set_source_rgba(r, g, b, 0.98)
+            cr.arc(cx, cy, radius, start_angle, active_angle)
+            cr.stroke()
+
+        # 5. Radial Scale Markings (Internal Ticks)
         num_ticks = 10
         for i in range(num_ticks + 1):
             t_pct = i / float(num_ticks)
             angle = start_angle + (total_angle * t_pct)
             is_major = (i % 2 == 0)
 
-            inner_r = radius - (13 if is_major else 7)
-            outer_r = radius - 5
+            inner_r = radius - (12 if is_major else 6)
+            outer_r = radius - 4
 
             x1 = cx + math.cos(angle) * inner_r
             y1 = cy + math.sin(angle) * inner_r
             x2 = cx + math.cos(angle) * outer_r
             y2 = cy + math.sin(angle) * outer_r
 
-            cr.set_line_width(1.5 if is_major else 0.8)
+            cr.set_line_width(1.4 if is_major else 0.8)
             if is_major:
-                cr.set_source_rgba(0.45, 0.47, 0.53, 0.7)
+                cr.set_source_rgba(0.42, 0.46, 0.54, 0.75)
             else:
-                cr.set_source_rgba(0.24, 0.26, 0.32, 0.4)
+                cr.set_source_rgba(0.22, 0.25, 0.32, 0.45)
             cr.move_to(x1, y1)
             cr.line_to(x2, y2)
             cr.stroke()
 
-        # 4. Center Digital RPM Readout
+        # 6. Center Metallic Hub with Ruby Core Dome
+        hub_r = radius - 16.0
+        # Bezel rim
+        cr.set_source_rgba(0.12, 0.14, 0.19, 1.0)
+        cr.arc(cx, cy, hub_r, 0, 2 * math.pi)
+        cr.fill()
+
+        cr.set_line_width(1.2)
+        cr.set_source_rgba(0.24, 0.27, 0.35, 0.8)
+        cr.arc(cx, cy, hub_r, 0, 2 * math.pi)
+        cr.stroke()
+
+        # Inner dark core plate
+        cr.set_source_rgba(0.06, 0.07, 0.10, 1.0)
+        cr.arc(cx, cy, hub_r - 2.5, 0, 2 * math.pi)
+        cr.fill()
+
+        # Center Ruby TrackPoint Core Indicator Dome
+        ruby_y = cy - 22.0
+        # Subtle glow
+        cr.set_source_rgba(0.89, 0.14, 0.10, 0.35)
+        cr.arc(cx, ruby_y, 5.0, 0, 2 * math.pi)
+        cr.fill()
+        # Solid dome
+        cr.set_source_rgba(0.89, 0.14, 0.10, 1.0)
+        cr.arc(cx, ruby_y, 3.0, 0, 2 * math.pi)
+        cr.fill()
+
+        # Digital Numerical RPM Readout
         rpm_val = int(round(self.current_rpm))
         rpm_str = f"{rpm_val:,}"
 
         cr.select_font_face("Ubuntu Sans Mono", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
-        cr.set_font_size(24)
+        cr.set_font_size(21)
         extents = cr.text_extents(rpm_str)
         cr.set_source_rgba(0.98, 0.98, 0.98, 1.0)
-        cr.move_to(cx - extents.width / 2.0 - extents.x_bearing, cy - 8)
+        cr.move_to(cx - extents.width / 2.0 - extents.x_bearing, cy - 3)
         cr.show_text(rpm_str)
 
         # "RPM" Label
         cr.select_font_face("Ubuntu Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
-        cr.set_font_size(10)
+        cr.set_font_size(9)
         extents_lbl = cr.text_extents("RPM")
         cr.set_source_rgba(0.48, 0.50, 0.56, 1.0)
-        cr.move_to(cx - extents_lbl.width / 2.0 - extents_lbl.x_bearing, cy + 10)
+        cr.move_to(cx - extents_lbl.width / 2.0 - extents_lbl.x_bearing, cy + 12)
         cr.show_text("RPM")
 
-        # Percentage
+        # Percentage readout
         pct_val = int(round(fraction * 100))
-        pct_str = f"{pct_val}% of Max"
-        cr.select_font_face("Ubuntu Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-        cr.set_font_size(9)
+        pct_str = f"{pct_val}% OF PEAK"
+        cr.select_font_face("Ubuntu Sans Mono", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        cr.set_font_size(8.5)
         extents_pct = cr.text_extents(pct_str)
-        cr.set_source_rgba(0.38, 0.40, 0.46, 1.0)
-        cr.move_to(cx - extents_pct.width / 2.0 - extents_pct.x_bearing, cy + 25)
+        if fraction < 0.4:
+            cr.set_source_rgba(0.0, 0.82, 1.0, 0.9)  # Cyan
+        elif fraction < 0.75:
+            cr.set_source_rgba(0.06, 0.73, 0.50, 0.9) # Emerald
+        else:
+            cr.set_source_rgba(0.89, 0.14, 0.10, 0.95) # Red
+        cr.move_to(cx - extents_pct.width / 2.0 - extents_pct.x_bearing, cy + 24)
         cr.show_text(pct_str)
 
         # Convert Cairo ARGB32 (BGRA in memory) to RGBA for GdkPixbuf

@@ -6,7 +6,7 @@ from typing import Dict, Any, List
 
 SENSOR_CSS = b"""
 .sensor-matrix-card {
-    background-color: #14161f;
+    background-color: #11131b;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 14px 16px;
@@ -20,7 +20,7 @@ SENSOR_CSS = b"""
 }
 
 .sensor-item-box {
-    background-color: #0c0d12;
+    background-color: #0c0e15;
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 7px;
     padding: 7px 11px;

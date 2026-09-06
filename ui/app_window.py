@@ -20,32 +20,39 @@ APP_CSS = b"""
 }
 
 window.fan-window {
-    background-color: #0b0c10;
+    background-color: #06070a;
     color: #e4e4e7;
 }
 
 headerbar.fan-header {
-    background-color: #111218;
+    background-color: #0d0f15;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    min-height: 46px;
+    min-height: 48px;
     padding: 0 14px;
 }
 
 .quickbar {
-    background-color: #0e0f14;
+    background-color: #090a0f;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    padding: 9px 18px;
+    padding: 8px 16px;
+}
+
+.telemetry-capsule {
+    background-color: #11131b;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 6px;
+    padding: 3px 8px;
 }
 
 .panel-card {
-    background-color: #14161f;
+    background-color: #11131b;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 16px;
 }
 
 .sub-metric-box {
-    background-color: #0c0d12;
+    background-color: #08090e;
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 8px;
     padding: 8px 12px;
@@ -60,8 +67,8 @@ headerbar.fan-header {
 
 .control-label {
     font-size: 12px;
-    font-weight: 600;
-    color: #e4e4e7;
+    font-weight: 700;
+    color: #fafafa;
     letter-spacing: -0.1px;
 }
 
@@ -72,8 +79,8 @@ headerbar.fan-header {
 }
 
 .font-mono-num {
-    font-family: "Ubuntu Sans Mono", "Ubuntu Mono", "JetBrains Mono", monospace;
-    font-size: 15px;
+    font-family: "Ubuntu Sans Mono", "Ubuntu Mono", monospace;
+    font-size: 14px;
     font-weight: 700;
     color: #fafafa;
     letter-spacing: -0.3px;
@@ -83,9 +90,9 @@ headerbar.fan-header {
     background-color: rgba(16, 185, 129, 0.12);
     color: #34d399;
     border: 1px solid rgba(16, 185, 129, 0.35);
-    border-radius: 5px;
-    padding: 2px 7px;
-    font-size: 10px;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 9px;
     font-weight: 700;
     letter-spacing: 0.5px;
 }
@@ -94,9 +101,9 @@ headerbar.fan-header {
     background-color: rgba(245, 158, 11, 0.12);
     color: #fbbf24;
     border: 1px solid rgba(245, 158, 11, 0.35);
-    border-radius: 5px;
-    padding: 2px 7px;
-    font-size: 10px;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 9px;
     font-weight: 700;
     letter-spacing: 0.5px;
 }
@@ -105,21 +112,21 @@ headerbar.fan-header {
     background-color: rgba(226, 35, 26, 0.15);
     color: #f87171;
     border: 1px solid rgba(226, 35, 26, 0.45);
-    border-radius: 5px;
-    padding: 2px 7px;
-    font-size: 10px;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 9px;
     font-weight: 700;
     letter-spacing: 0.5px;
 }
 
 .badge-active {
-    background-color: #1f222e;
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 5px;
-    padding: 2px 8px;
+    background-color: #191c26;
+    color: #fafafa;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    padding: 1px 7px;
     font-family: "Ubuntu Sans Mono", "Ubuntu Mono", monospace;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: -0.2px;
 }
@@ -128,8 +135,8 @@ headerbar.fan-header {
     background-color: rgba(56, 189, 248, 0.10);
     color: #38bdf8;
     border: 1px solid rgba(56, 189, 248, 0.30);
-    border-radius: 5px;
-    padding: 2px 8px;
+    border-radius: 4px;
+    padding: 1px 7px;
     font-family: "Ubuntu Sans Mono", "Ubuntu Mono", monospace;
     font-size: 10px;
     font-weight: 700;
@@ -137,20 +144,20 @@ headerbar.fan-header {
 }
 
 .preset-btn {
-    background-color: #14161f;
+    background-color: #11131b;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 10px;
-    padding: 9px 12px;
+    padding: 10px 12px;
 }
 
 .preset-btn:hover {
-    background-color: #1c1e2a;
+    background-color: #181b26;
     border-color: rgba(255, 255, 255, 0.16);
 }
 
 .preset-active {
     border-color: #e2231a;
-    background-color: rgba(226, 35, 26, 0.14);
+    background-color: rgba(226, 35, 26, 0.15);
 }
 
 .preset-title {
@@ -165,20 +172,42 @@ headerbar.fan-header {
     color: #71717a;
 }
 
-.emerald-dot { color: #10b981; font-size: 10px; }
-.cyan-dot { color: #00d2ff; font-size: 10px; }
-.amber-dot { color: #f59e0b; font-size: 10px; }
-.red-dot { color: #e2231a; font-size: 10px; }
+.emerald-dot { color: #10b981; font-size: 11px; }
+.cyan-dot { color: #00d2ff; font-size: 11px; }
+.amber-dot { color: #f59e0b; font-size: 11px; }
+.red-dot { color: #e2231a; font-size: 11px; }
 
 .slider-card {
-    background-color: #14161f;
+    background-color: #11131b;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     padding: 14px 16px;
 }
 
+scale trough {
+    background-color: #08090e;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 4px;
+    min-height: 6px;
+}
+
+scale highlight {
+    background-color: #e2231a;
+    border-radius: 4px;
+    min-height: 6px;
+}
+
+scale slider {
+    background-image: none;
+    background-color: #ffffff;
+    border: 2px solid #e2231a;
+    border-radius: 50%;
+    min-width: 16px;
+    min-height: 16px;
+}
+
 .perm-banner {
-    background-color: #2e1505;
+    background-color: #241105;
     border-bottom: 1px solid #78350f;
     color: #fef3c7;
     padding: 7px 18px;
@@ -199,62 +228,68 @@ headerbar.fan-header {
     background-color: #b45309;
 }
 
-.btn-purge-action {
+button.btn-purge-action {
+    background-image: none;
     background-color: rgba(226, 35, 26, 0.12);
     color: #fca5a5;
     border: 1px solid rgba(226, 35, 26, 0.35);
     border-radius: 6px;
-    padding: 4px 11px;
+    padding: 4px 12px;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.2px;
 }
 
-.btn-purge-action:hover {
-    background-color: rgba(226, 35, 26, 0.24);
+button.btn-purge-action:hover {
+    background-image: none;
+    background-color: rgba(226, 35, 26, 0.25);
     border-color: #e2231a;
     color: #ffffff;
 }
 
-.btn-curve-action {
+button.btn-curve-action {
+    background-image: none;
     background-color: rgba(59, 130, 246, 0.10);
     color: #93c5fd;
     border: 1px solid rgba(59, 130, 246, 0.30);
     border-radius: 6px;
-    padding: 4px 11px;
+    padding: 4px 12px;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.2px;
 }
 
-.btn-curve-action:hover {
-    background-color: rgba(59, 130, 246, 0.20);
+button.btn-curve-action:hover {
+    background-image: none;
+    background-color: rgba(59, 130, 246, 0.22);
     border-color: #3b82f6;
     color: #ffffff;
 }
 
-.btn-toggle-sensors {
-    background-color: #14161f;
+button.btn-toggle-sensors {
+    background-image: none;
+    background-color: #11131b;
     color: #a1a1aa;
     border: 1px solid rgba(255, 255, 255, 0.10);
     border-radius: 6px;
-    padding: 3px 10px;
+    padding: 4px 12px;
     font-size: 11px;
     font-weight: 600;
 }
 
-.btn-toggle-sensors:hover {
-    background-color: #1e202a;
-    border-color: rgba(255, 255, 255, 0.18);
+button.btn-toggle-sensors:hover {
+    background-image: none;
+    background-color: #1a1c27;
+    border-color: rgba(255, 255, 255, 0.20);
     color: #ffffff;
 }
 
 .status-pill {
-    background-color: #121319;
+    background-color: #10121a;
     color: #71717a;
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 5px;
-    padding: 2px 7px;
+    padding: 2px 8px;
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.3px;
@@ -329,6 +364,11 @@ class AppWindow(Gtk.Window):
         header = Gtk.HeaderBar()
         header.set_show_close_button(True)
         header.get_style_context().add_class("fan-header")
+
+        # Direct EC Control Pill
+        ec_pill = Gtk.Label(label="DIRECT EC CONTROL")
+        ec_pill.get_style_context().add_class("status-pill")
+        header.pack_start(ec_pill)
         
         title_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         red_dot = Gtk.Label(label="●")
@@ -367,6 +407,7 @@ class AppWindow(Gtk.Window):
 
         # CPU Temp
         box_temp = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        box_temp.get_style_context().add_class("telemetry-capsule")
         lbl_temp_name = Gtk.Label(label="CPU Package:")
         lbl_temp_name.get_style_context().add_class("text-muted")
         box_temp.pack_start(lbl_temp_name, False, False, 0)
@@ -382,6 +423,7 @@ class AppWindow(Gtk.Window):
 
         # Fan RPM
         box_rpm = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        box_rpm.get_style_context().add_class("telemetry-capsule")
         lbl_rpm_name = Gtk.Label(label="Tachometer:")
         lbl_rpm_name.get_style_context().add_class("text-muted")
         box_rpm.pack_start(lbl_rpm_name, False, False, 0)
@@ -393,6 +435,7 @@ class AppWindow(Gtk.Window):
 
         # Active Mode
         box_mode = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        box_mode.get_style_context().add_class("telemetry-capsule")
         lbl_mode_name = Gtk.Label(label="Mode:")
         lbl_mode_name.get_style_context().add_class("text-muted")
         box_mode.pack_start(lbl_mode_name, False, False, 0)
@@ -404,6 +447,7 @@ class AppWindow(Gtk.Window):
 
         # Smart Curve Profile Badge
         box_prof = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        box_prof.get_style_context().add_class("telemetry-capsule")
         lbl_prof_name = Gtk.Label(label="Profile:")
         lbl_prof_name.get_style_context().add_class("text-muted")
         box_prof.pack_start(lbl_prof_name, False, False, 0)
