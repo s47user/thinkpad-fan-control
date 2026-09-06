@@ -30,13 +30,13 @@ class ControlPanel(Gtk.Box):
         btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         
         if self.on_open_dust_purge:
-            btn_purge = Gtk.Button(label="🌪 Dust Purge")
+            btn_purge = Gtk.Button(label="Dust Purge")
             btn_purge.get_style_context().add_class("btn-purge-action")
             btn_purge.connect("clicked", lambda b: self.on_open_dust_purge())
             btn_box.pack_start(btn_purge, False, False, 0)
 
         if self.on_open_curve_dialog:
-            btn_curve = Gtk.Button(label="⚙ Smart Curve")
+            btn_curve = Gtk.Button(label="Smart Curve")
             btn_curve.get_style_context().add_class("btn-curve-action")
             btn_curve.connect("clicked", lambda b: self.on_open_curve_dialog())
             btn_box.pack_start(btn_curve, False, False, 0)

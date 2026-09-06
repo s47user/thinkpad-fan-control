@@ -69,12 +69,12 @@ class TrayIndicator:
             menu.append(Gtk.SeparatorMenuItem())
 
             if self.on_open_dust_purge:
-                item_purge = Gtk.MenuItem(label="🌪 Start Fan Dust Purge...")
+                item_purge = Gtk.MenuItem(label="Start Fan Dust Purge...")
                 item_purge.connect("activate", lambda w: self.on_open_dust_purge())
                 menu.append(item_purge)
 
             if self.on_open_curve_dialog:
-                item_curve = Gtk.MenuItem(label="⚙ Smart Curve Profiles...")
+                item_curve = Gtk.MenuItem(label="Smart Curve Profiles...")
                 item_curve.connect("activate", lambda w: self.on_open_curve_dialog())
                 menu.append(item_curve)
 

@@ -1,94 +1,104 @@
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GLib
+gi.require_version("Gdk", "3.0")
+from gi.repository import Gtk, Gdk, GLib
 from typing import Callable, Optional
 from backend import FanController
 
 DIALOG_CSS = b"""
 .purge-window {
-    background-color: #16181f;
-    color: #f1f3f7;
+    background-color: #0b0c10;
+    color: #e4e4e7;
+    font-family: "Ubuntu Sans", "Inter", -apple-system, sans-serif;
     border-radius: 12px;
 }
 
 .purge-card {
-    background-color: #1d202b;
-    border: 1px solid #2d3344;
-    border-radius: 10px;
+    background-color: #14161f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
     padding: 16px;
 }
 
 .purge-title {
     font-size: 15px;
     font-weight: 700;
-    color: #ffffff;
+    color: #fafafa;
+    letter-spacing: -0.2px;
 }
 
 .purge-sub {
     font-size: 11px;
-    color: #9aa1b3;
+    color: #71717a;
 }
 
 .purge-badge-burst {
-    background-color: #7f1d1d;
-    color: #fca5a5;
-    border: 1px solid #dc2626;
-    border-radius: 6px;
+    background-color: rgba(226, 35, 26, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(226, 35, 26, 0.45);
+    border-radius: 5px;
     padding: 3px 10px;
     font-size: 11px;
     font-weight: 700;
 }
 
 .purge-badge-settle {
-    background-color: #143547;
-    color: #7dd3fc;
-    border: 1px solid #0284c7;
-    border-radius: 6px;
+    background-color: rgba(56, 189, 248, 0.12);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 5px;
     padding: 3px 10px;
     font-size: 11px;
     font-weight: 700;
 }
 
 .purge-badge-ready {
-    background-color: #27272a;
+    background-color: #1f222e;
     color: #d4d4d8;
-    border: 1px solid #3f3f46;
-    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 5px;
     padding: 3px 10px;
     font-size: 11px;
     font-weight: 700;
 }
 
-.purge-btn-start {
+button.purge-btn-start {
+    background-image: none;
     background-color: #e2231a;
     color: #ffffff;
-    border-radius: 8px;
+    border: 1px solid #e2231a;
+    border-radius: 6px;
     font-weight: 700;
     font-size: 13px;
     padding: 8px 18px;
 }
 
-.purge-btn-start:hover {
-    background-color: #ff3b30;
+button.purge-btn-start:hover {
+    background-image: none;
+    background-color: #f03e3e;
 }
 
-.purge-btn-abort {
-    background-color: #dc2626;
-    color: #ffffff;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 13px;
-    padding: 8px 18px;
-}
-
-.purge-btn-abort:hover {
+button.purge-btn-abort {
+    background-image: none;
     background-color: #b91c1c;
+    color: #ffffff;
+    border: 1px solid #b91c1c;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 18px;
+}
+
+button.purge-btn-abort:hover {
+    background-image: none;
+    background-color: #991b1b;
 }
 
 .mono-telemetry {
-    font-family: "Ubuntu Mono", "JetBrains Mono", monospace;
+    font-family: "Ubuntu Sans Mono", "Ubuntu Mono", "JetBrains Mono", monospace;
     font-size: 16px;
     font-weight: 700;
+    color: #fafafa;
 }
 """
 
@@ -118,9 +128,13 @@ class DustPurgeDialog(Gtk.Dialog):
         self.connect("delete-event", self._on_dialog_close)
 
     def _apply_css(self):
-        css_provider = Gtk.CssProvider()
-        css_provider.load_from_data(DIALOG_CSS)
-        self.get_style_context().add_provider(css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        screen = Gdk.Screen.get_default()
+        if screen:
+            css_provider = Gtk.CssProvider()
+            css_provider.load_from_data(DIALOG_CSS)
+            Gtk.StyleContext.add_provider_for_screen(
+                screen, css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            )
 
     def _build_ui(self):
         content_area = self.get_content_area()
@@ -200,7 +214,7 @@ class DustPurgeDialog(Gtk.Dialog):
         content_area.pack_start(card, True, True, 0)
 
         # Safety info note
-        safety_lbl = Gtk.Label(label="🛡 Safety Watchdog Active: Purge auto-aborts if temperature exceeds 80°C.")
+        safety_lbl = Gtk.Label(label="Safety Watchdog Active: Purge auto-aborts if temperature exceeds 80°C.")
         safety_lbl.get_style_context().add_class("purge-sub")
         content_area.pack_start(safety_lbl, False, False, 0)
 

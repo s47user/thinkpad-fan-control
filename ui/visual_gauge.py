@@ -64,7 +64,7 @@ class VisualGauge(Gtk.Image):
         # 1. Background Arc Track
         cr.set_line_width(12.0)
         cr.set_line_cap(cairo.LINE_CAP_ROUND)
-        cr.set_source_rgba(0.16, 0.18, 0.23, 1.0) # #282c3b
+        cr.set_source_rgba(0.11, 0.12, 0.16, 1.0) # refined dark zinc track
         cr.arc(cx, cy, radius, start_angle, end_angle)
         cr.stroke()
 
@@ -93,19 +93,19 @@ class VisualGauge(Gtk.Image):
             angle = start_angle + (total_angle * t_pct)
             is_major = (i % 2 == 0)
 
-            inner_r = radius - (14 if is_major else 8)
-            outer_r = radius - 6
+            inner_r = radius - (13 if is_major else 7)
+            outer_r = radius - 5
 
             x1 = cx + math.cos(angle) * inner_r
             y1 = cy + math.sin(angle) * inner_r
             x2 = cx + math.cos(angle) * outer_r
             y2 = cy + math.sin(angle) * outer_r
 
-            cr.set_line_width(2.0 if is_major else 1.0)
+            cr.set_line_width(1.5 if is_major else 0.8)
             if is_major:
-                cr.set_source_rgba(0.55, 0.58, 0.65, 0.8)
+                cr.set_source_rgba(0.45, 0.47, 0.53, 0.7)
             else:
-                cr.set_source_rgba(0.30, 0.33, 0.40, 0.5)
+                cr.set_source_rgba(0.24, 0.26, 0.32, 0.4)
             cr.move_to(x1, y1)
             cr.line_to(x2, y2)
             cr.stroke()
@@ -114,29 +114,29 @@ class VisualGauge(Gtk.Image):
         rpm_val = int(round(self.current_rpm))
         rpm_str = f"{rpm_val:,}"
 
-        cr.select_font_face("Ubuntu Mono", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        cr.select_font_face("Ubuntu Sans Mono", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
         cr.set_font_size(24)
         extents = cr.text_extents(rpm_str)
-        cr.set_source_rgba(0.96, 0.96, 0.98, 1.0)
+        cr.set_source_rgba(0.98, 0.98, 0.98, 1.0)
         cr.move_to(cx - extents.width / 2.0 - extents.x_bearing, cy - 8)
         cr.show_text(rpm_str)
 
         # "RPM" Label
-        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        cr.select_font_face("Ubuntu Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
         cr.set_font_size(10)
         extents_lbl = cr.text_extents("RPM")
-        cr.set_source_rgba(0.55, 0.58, 0.65, 1.0)
+        cr.set_source_rgba(0.48, 0.50, 0.56, 1.0)
         cr.move_to(cx - extents_lbl.width / 2.0 - extents_lbl.x_bearing, cy + 10)
         cr.show_text("RPM")
 
         # Percentage
         pct_val = int(round(fraction * 100))
         pct_str = f"{pct_val}% of Max"
-        cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        cr.select_font_face("Ubuntu Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         cr.set_font_size(9)
         extents_pct = cr.text_extents(pct_str)
-        cr.set_source_rgba(0.40, 0.45, 0.55, 1.0)
-        cr.move_to(cx - extents_pct.width / 2.0 - extents_pct.x_bearing, cy + 26)
+        cr.set_source_rgba(0.38, 0.40, 0.46, 1.0)
+        cr.move_to(cx - extents_pct.width / 2.0 - extents_pct.x_bearing, cy + 25)
         cr.show_text(pct_str)
 
         # Convert Cairo ARGB32 (BGRA in memory) to RGBA for GdkPixbuf

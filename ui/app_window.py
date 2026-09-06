@@ -15,158 +15,184 @@ from .curve_dialog import CurveConfigDialog
 
 
 APP_CSS = b"""
+* {
+    font-family: "Ubuntu Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
 window.fan-window {
-    background-color: #181a20;
-    color: #f1f3f7;
+    background-color: #0b0c10;
+    color: #e4e4e7;
 }
 
 headerbar.fan-header {
-    background-color: #1e2129;
-    border-bottom: 1px solid #2b2f3c;
-    min-height: 44px;
-    padding: 0 12px;
+    background-color: #111218;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    min-height: 46px;
+    padding: 0 14px;
 }
 
 .quickbar {
-    background-color: #14161c;
-    border-bottom: 1px solid #252834;
-    padding: 8px 16px;
+    background-color: #0e0f14;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 9px 18px;
 }
 
 .panel-card {
-    background-color: #1f222b;
-    border: 1px solid #2c303d;
+    background-color: #14161f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
-    padding: 14px;
+    padding: 16px;
 }
 
 .sub-metric-box {
-    background-color: #16181f;
-    border: 1px solid #2a2e3b;
+    background-color: #0c0d12;
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 8px;
-    padding: 6px 10px;
+    padding: 8px 12px;
 }
 
 .section-title {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    color: #8e95a5;
-    letter-spacing: 0.8px;
+    color: #71717a;
+    letter-spacing: 1.2px;
 }
 
 .control-label {
     font-size: 12px;
     font-weight: 600;
-    color: #d1d5db;
+    color: #e4e4e7;
+    letter-spacing: -0.1px;
 }
 
 .text-muted {
     font-size: 10px;
-    color: #6b7280;
+    font-weight: 500;
+    color: #71717a;
 }
 
 .font-mono-num {
-    font-family: "Ubuntu Mono", "JetBrains Mono", monospace;
+    font-family: "Ubuntu Sans Mono", "Ubuntu Mono", "JetBrains Mono", monospace;
     font-size: 15px;
     font-weight: 700;
+    color: #fafafa;
+    letter-spacing: -0.3px;
 }
 
 .badge-cool {
-    background-color: #064e3b;
+    background-color: rgba(16, 185, 129, 0.12);
     color: #34d399;
-    border: 1px solid #059669;
-    border-radius: 4px;
-    padding: 1px 6px;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 5px;
+    padding: 2px 7px;
     font-size: 10px;
     font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 .badge-warm {
-    background-color: #78350f;
+    background-color: rgba(245, 158, 11, 0.12);
     color: #fbbf24;
-    border: 1px solid #d97706;
-    border-radius: 4px;
-    padding: 1px 6px;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 5px;
+    padding: 2px 7px;
     font-size: 10px;
     font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 .badge-hot {
-    background-color: #881337;
-    color: #f43f5e;
-    border: 1px solid #e11d48;
-    border-radius: 4px;
-    padding: 1px 6px;
+    background-color: rgba(226, 35, 26, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(226, 35, 26, 0.45);
+    border-radius: 5px;
+    padding: 2px 7px;
     font-size: 10px;
     font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 .badge-active {
-    background-color: #27272a;
+    background-color: #1f222e;
     color: #ffffff;
-    border: 1px solid #3f3f46;
-    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 5px;
     padding: 2px 8px;
-    font-family: monospace;
+    font-family: "Ubuntu Sans Mono", "Ubuntu Mono", monospace;
     font-size: 11px;
     font-weight: 700;
+    letter-spacing: -0.2px;
+}
+
+.badge-profile {
+    background-color: rgba(56, 189, 248, 0.10);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.30);
+    border-radius: 5px;
+    padding: 2px 8px;
+    font-family: "Ubuntu Sans Mono", "Ubuntu Mono", monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
 }
 
 .preset-btn {
-    background-color: #1d2028;
-    border: 1px solid #2f3342;
+    background-color: #14161f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 10px;
-    padding: 8px 10px;
+    padding: 9px 12px;
 }
 
 .preset-btn:hover {
-    background-color: #262a36;
-    border-color: #43485c;
+    background-color: #1c1e2a;
+    border-color: rgba(255, 255, 255, 0.16);
 }
 
 .preset-active {
     border-color: #e2231a;
-    background-color: rgba(226, 35, 26, 0.20);
+    background-color: rgba(226, 35, 26, 0.14);
 }
 
 .preset-title {
     font-size: 12px;
     font-weight: 700;
-    color: #ffffff;
+    color: #fafafa;
+    letter-spacing: -0.1px;
 }
 
 .preset-sub {
     font-size: 10px;
-    color: #8e95a5;
+    color: #71717a;
 }
 
-.emerald-dot { color: #10b981; font-size: 12px; }
-.cyan-dot { color: #00d2ff; font-size: 12px; }
-.amber-dot { color: #f59e0b; font-size: 12px; }
-.red-dot { color: #e2231a; font-size: 12px; }
+.emerald-dot { color: #10b981; font-size: 10px; }
+.cyan-dot { color: #00d2ff; font-size: 10px; }
+.amber-dot { color: #f59e0b; font-size: 10px; }
+.red-dot { color: #e2231a; font-size: 10px; }
 
 .slider-card {
-    background-color: #1b1e26;
-    border: 1px solid #2a2e3b;
-    border-radius: 10px;
-    padding: 12px 14px;
+    background-color: #14161f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px 16px;
 }
 
 .perm-banner {
-    background-color: #451a03;
-    border-bottom: 1px solid #92400e;
+    background-color: #2e1505;
+    border-bottom: 1px solid #78350f;
     color: #fef3c7;
-    padding: 6px 16px;
+    padding: 7px 18px;
     font-size: 11px;
+    font-weight: 500;
 }
 
 .btn-unlock {
     background-color: #d97706;
     color: #ffffff;
-    border-radius: 4px;
-    padding: 2px 8px;
+    border-radius: 5px;
+    padding: 3px 10px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .btn-unlock:hover {
@@ -174,57 +200,64 @@ headerbar.fan-header {
 }
 
 .btn-purge-action {
-    background-color: #3b1114;
+    background-color: rgba(226, 35, 26, 0.12);
     color: #fca5a5;
-    border: 1px solid #7f1d1d;
+    border: 1px solid rgba(226, 35, 26, 0.35);
     border-radius: 6px;
-    padding: 3px 8px;
+    padding: 4px 11px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.2px;
 }
 
 .btn-purge-action:hover {
-    background-color: #5c181d;
-    border-color: #991b1b;
+    background-color: rgba(226, 35, 26, 0.24);
+    border-color: #e2231a;
+    color: #ffffff;
 }
 
 .btn-curve-action {
-    background-color: #1a2234;
+    background-color: rgba(59, 130, 246, 0.10);
     color: #93c5fd;
-    border: 1px solid #1e3a8a;
+    border: 1px solid rgba(59, 130, 246, 0.30);
     border-radius: 6px;
-    padding: 3px 8px;
+    padding: 4px 11px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.btn-curve-action:hover {
+    background-color: rgba(59, 130, 246, 0.20);
+    border-color: #3b82f6;
+    color: #ffffff;
+}
+
+.btn-toggle-sensors {
+    background-color: #14161f;
+    color: #a1a1aa;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 6px;
+    padding: 3px 10px;
     font-size: 11px;
     font-weight: 600;
 }
 
-.btn-curve-action:hover {
-    background-color: #25334d;
-    border-color: #2563eb;
-}
-
-.btn-toggle-sensors {
-    background-color: #1a1d26;
-    color: #949db2;
-    border: 1px solid #2d3345;
-    border-radius: 5px;
-    padding: 2px 8px;
-    font-size: 11px;
-}
-
 .btn-toggle-sensors:hover {
-    background-color: #242936;
-    color: #f1f3f7;
+    background-color: #1e202a;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
 }
 
-.badge-profile {
-    background-color: #1e293b;
-    color: #38bdf8;
-    border: 1px solid #0284c7;
-    border-radius: 4px;
-    padding: 1px 6px;
+.status-pill {
+    background-color: #121319;
+    color: #71717a;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 5px;
+    padding: 2px 7px;
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 """
 
@@ -317,7 +350,7 @@ class AppWindow(Gtk.Window):
         self.perm_banner = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         self.perm_banner.get_style_context().add_class("perm-banner")
         
-        perm_text = Gtk.Label(label="🔒 Read-Only Telemetry: Manual fan speed control requires elevation.")
+        perm_text = Gtk.Label(label="Read-Only Telemetry: Manual fan speed control requires elevation.")
         self.perm_banner.pack_start(perm_text, False, False, 0)
 
         btn_unlock = Gtk.Button(label="Unlock Controls")
@@ -388,8 +421,8 @@ class AppWindow(Gtk.Window):
 
         # Watchdog status
         box_wd = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
-        lbl_wd = Gtk.Label(label="🛡 Watchdog: 10s Active")
-        lbl_wd.get_style_context().add_class("text-muted")
+        lbl_wd = Gtk.Label(label="WATCHDOG 10s")
+        lbl_wd.get_style_context().add_class("status-pill")
         box_wd.pack_end(lbl_wd, False, False, 0)
         quickbar.pack_end(box_wd, False, False, 0)
 

@@ -1,66 +1,72 @@
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+gi.require_version("Gdk", "3.0")
+from gi.repository import Gtk, Gdk
 from typing import Dict, Any, List
 
 SENSOR_CSS = b"""
 .sensor-matrix-card {
-    background-color: #171922;
-    border: 1px solid #282d3c;
-    border-radius: 10px;
-    padding: 12px 14px;
+    background-color: #14161f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px 16px;
 }
 
 .sensor-grid-title {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    color: #8a93a6;
-    letter-spacing: 0.8px;
+    color: #71717a;
+    letter-spacing: 1.2px;
 }
 
 .sensor-item-box {
-    background-color: #1f2330;
-    border: 1px solid #2d3448;
-    border-radius: 6px;
-    padding: 6px 10px;
+    background-color: #0c0d12;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 7px;
+    padding: 7px 11px;
 }
 
 .sensor-name {
     font-size: 10px;
     font-weight: 600;
-    color: #949db2;
+    color: #a1a1aa;
+    letter-spacing: -0.1px;
 }
 
 .sensor-val {
-    font-family: "Ubuntu Mono", "JetBrains Mono", monospace;
+    font-family: "Ubuntu Sans Mono", "Ubuntu Mono", "JetBrains Mono", monospace;
     font-size: 13px;
     font-weight: 700;
-    color: #f1f3f7;
+    color: #fafafa;
+    letter-spacing: -0.2px;
 }
 
 .sensor-badge-cool {
-    background-color: #064e3b;
+    background-color: rgba(16, 185, 129, 0.12);
     color: #34d399;
-    border-radius: 3px;
-    padding: 0 4px;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 4px;
+    padding: 1px 5px;
     font-size: 9px;
     font-weight: 700;
 }
 
 .sensor-badge-warm {
-    background-color: #78350f;
+    background-color: rgba(245, 158, 11, 0.12);
     color: #fbbf24;
-    border-radius: 3px;
-    padding: 0 4px;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 4px;
+    padding: 1px 5px;
     font-size: 9px;
     font-weight: 700;
 }
 
 .sensor-badge-hot {
-    background-color: #881337;
-    color: #f43f5e;
-    border-radius: 3px;
-    padding: 0 4px;
+    background-color: rgba(226, 35, 26, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(226, 35, 26, 0.45);
+    border-radius: 4px;
+    padding: 1px 5px;
     font-size: 9px;
     font-weight: 700;
 }
@@ -80,9 +86,13 @@ class SensorMatrixWidget(Gtk.Box):
         self._build_ui()
 
     def _apply_css(self):
-        provider = Gtk.CssProvider()
-        provider.load_from_data(SENSOR_CSS)
-        self.get_style_context().add_provider(provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        screen = Gdk.Screen.get_default()
+        if screen:
+            provider = Gtk.CssProvider()
+            provider.load_from_data(SENSOR_CSS)
+            Gtk.StyleContext.add_provider_for_screen(
+                screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            )
 
     def _build_ui(self):
         # Header
@@ -91,7 +101,7 @@ class SensorMatrixWidget(Gtk.Box):
         title.get_style_context().add_class("sensor-grid-title")
         header.pack_start(title, False, False, 0)
 
-        self.power_badge = Gtk.Label(label="⚡ AC POWER")
+        self.power_badge = Gtk.Label(label="AC POWER")
         self.power_badge.get_style_context().add_class("sensor-badge-cool")
         header.pack_end(self.power_badge, False, False, 0)
         self.pack_start(header, False, False, 0)
@@ -114,11 +124,11 @@ class SensorMatrixWidget(Gtk.Box):
         bat_stat = power.get("battery_status", "Full")
 
         if ac_online:
-            self.power_badge.set_text(f"⚡ AC ONLINE ({bat_pct}%)")
+            self.power_badge.set_text(f"AC ONLINE ({bat_pct}%)")
             self.power_badge.get_style_context().remove_class("sensor-badge-warm")
             self.power_badge.get_style_context().add_class("sensor-badge-cool")
         else:
-            self.power_badge.set_text(f"🔋 BATTERY: {bat_pct}% [{bat_stat}]")
+            self.power_badge.set_text(f"BATTERY: {bat_pct}% [{bat_stat}]")
             self.power_badge.get_style_context().remove_class("sensor-badge-cool")
             self.power_badge.get_style_context().add_class("sensor-badge-warm")
 

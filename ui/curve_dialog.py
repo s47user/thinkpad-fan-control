@@ -1,50 +1,58 @@
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+gi.require_version("Gdk", "3.0")
+from gi.repository import Gtk, Gdk
 from typing import Callable, Optional
 from backend import SmartCurveEngine
 
 CURVE_CSS = b"""
 .curve-window {
-    background-color: #16181f;
-    color: #f1f3f7;
+    background-color: #0b0c10;
+    color: #e4e4e7;
+    font-family: "Ubuntu Sans", "Inter", -apple-system, sans-serif;
     border-radius: 12px;
 }
 
 .curve-card {
-    background-color: #1d202b;
-    border: 1px solid #2d3344;
-    border-radius: 10px;
-    padding: 14px;
+    background-color: #14161f;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 16px;
 }
 
 .curve-title {
     font-size: 15px;
     font-weight: 700;
-    color: #ffffff;
+    color: #fafafa;
+    letter-spacing: -0.2px;
 }
 
 .curve-sub {
     font-size: 11px;
-    color: #9aa1b3;
+    color: #71717a;
 }
 
 .profile-radio {
     font-size: 12px;
     font-weight: 600;
-    color: #e5e7eb;
+    color: #e4e4e7;
+    letter-spacing: -0.1px;
 }
 
-.btn-primary {
+button.btn-primary {
+    background-image: none;
     background-color: #e2231a;
     color: #ffffff;
+    border: 1px solid #e2231a;
     border-radius: 6px;
     font-weight: 700;
-    padding: 6px 16px;
+    padding: 7px 18px;
+    letter-spacing: 0.2px;
 }
 
-.btn-primary:hover {
-    background-color: #ff3b30;
+button.btn-primary:hover {
+    background-image: none;
+    background-color: #f03e3e;
 }
 """
 
@@ -67,9 +75,13 @@ class CurveConfigDialog(Gtk.Dialog):
         self._build_ui()
 
     def _apply_css(self):
-        provider = Gtk.CssProvider()
-        provider.load_from_data(CURVE_CSS)
-        self.get_style_context().add_provider(provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        screen = Gdk.Screen.get_default()
+        if screen:
+            provider = Gtk.CssProvider()
+            provider.load_from_data(CURVE_CSS)
+            Gtk.StyleContext.add_provider_for_screen(
+                screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            )
 
     def _build_ui(self):
         content_area = self.get_content_area()

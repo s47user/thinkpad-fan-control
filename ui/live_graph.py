@@ -53,12 +53,12 @@ class LiveGraph(Gtk.Image):
         plot_h = max(10.0, h - margin_top - margin_bottom)
 
         # Plot interior background
-        cr.set_source_rgba(0.06, 0.07, 0.09, 1.0)
+        cr.set_source_rgba(0.04, 0.05, 0.07, 1.0)
         cr.rectangle(margin_left, margin_top, plot_w, plot_h)
         cr.fill()
 
         # 2. Horizontal Reference Lines & Labels
-        cr.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        cr.select_font_face("Ubuntu Sans Mono", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         cr.set_font_size(9)
 
         for temp_ref in [40.0, 60.0, 85.0]:
@@ -70,7 +70,7 @@ class LiveGraph(Gtk.Image):
                 cr.set_source_rgba(0.95, 0.25, 0.25, 0.75)
             else:
                 cr.set_dash([])
-                cr.set_source_rgba(0.18, 0.20, 0.26, 0.6)
+                cr.set_source_rgba(0.20, 0.22, 0.28, 0.4)
 
             cr.move_to(margin_left, y_pos)
             cr.line_to(margin_left + plot_w, y_pos)
@@ -82,7 +82,7 @@ class LiveGraph(Gtk.Image):
             if temp_ref == 85.0:
                 cr.set_source_rgba(0.95, 0.35, 0.35, 0.9)
             else:
-                cr.set_source_rgba(0.45, 0.48, 0.55, 0.9)
+                cr.set_source_rgba(0.45, 0.47, 0.53, 0.9)
             cr.move_to(margin_left - extents.width - 6, y_pos + extents.height / 2.0)
             cr.show_text(lbl_text)
 
@@ -117,19 +117,19 @@ class LiveGraph(Gtk.Image):
 
         # Gradient area fill
         gradient = cairo.LinearGradient(0, margin_top, 0, margin_top + plot_h)
-        gradient.add_color_stop_rgba(0.0, 0.0, 0.82, 1.0, 0.30)
-        gradient.add_color_stop_rgba(1.0, 0.0, 0.82, 1.0, 0.02)
+        gradient.add_color_stop_rgba(0.0, 0.0, 0.82, 1.0, 0.25)
+        gradient.add_color_stop_rgba(1.0, 0.0, 0.82, 1.0, 0.01)
         cr.set_source(gradient)
         cr.fill_preserve()
 
         # Stroke line
-        cr.set_line_width(2.2)
+        cr.set_line_width(2.0)
         cr.set_source_rgba(0.0, 0.82, 1.0, 0.95)
         cr.stroke()
 
         # Border around plot
         cr.set_line_width(1.0)
-        cr.set_source_rgba(0.22, 0.25, 0.32, 1.0)
+        cr.set_source_rgba(0.18, 0.20, 0.26, 0.6)
         cr.rectangle(margin_left, margin_top, plot_w, plot_h)
         cr.stroke()
 
