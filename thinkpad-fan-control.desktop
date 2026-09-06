@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=ThinkPad Fan Control
+GenericName=Fan Speed Controller
+Comment=Hardware fan control, live RPM gauges, and thermal monitoring for ThinkPad
+Exec=python3 /home/lenovo/Documents/thinkpad-fan-control/main.py
+Icon=/home/lenovo/Documents/thinkpad-fan-control/assets/icons/thinkpad-fan.svg
+Terminal=false
+Categories=System;HardwareSettings;Settings;
+StartupNotify=true
+Keywords=thinkpad;fan;thermal;cooling;speed;sensors;temperature;

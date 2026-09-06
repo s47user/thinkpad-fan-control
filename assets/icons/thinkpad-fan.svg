@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Squircle Gradient (ThinkPad Raven Black Matte) -->
+    <linearGradient id="chassis-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f222c"/>
+      <stop offset="40%" stop-color="#14161e"/>
+      <stop offset="100%" stop-color="#090a0d"/>
+    </linearGradient>
+
+    <!-- Bezel Rim Gradient -->
+    <linearGradient id="bezel-rim" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4a5369"/>
+      <stop offset="35%" stop-color="#2d3342"/>
+      <stop offset="100%" stop-color="#13151b"/>
+    </linearGradient>
+
+    <!-- Turbine Chamber Depth Gradient -->
+    <radialGradient id="chamber-depth" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#06070a"/>
+      <stop offset="65%" stop-color="#0b0d12"/>
+      <stop offset="90%" stop-color="#151720"/>
+      <stop offset="100%" stop-color="#222734"/>
+    </radialGradient>
+
+    <!-- Blade Aerodynamic Gradient -->
+    <linearGradient id="blade-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3d4456"/>
+      <stop offset="35%" stop-color="#272c3b"/>
+      <stop offset="85%" stop-color="#161923"/>
+      <stop offset="100%" stop-color="#0d0f14"/>
+    </linearGradient>
+
+    <linearGradient id="edge-highlight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#96a4c4"/>
+      <stop offset="40%" stop-color="#5a6682"/>
+      <stop offset="100%" stop-color="#222734"/>
+    </linearGradient>
+
+    <!-- Hub Housing & TrackPoint Dome Gradients -->
+    <linearGradient id="hub-metallic" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4a5268"/>
+      <stop offset="40%" stop-color="#252a38"/>
+      <stop offset="100%" stop-color="#111319"/>
+    </linearGradient>
+
+    <radialGradient id="trackpoint-glow" cx="36%" cy="34%" r="65%">
+      <stop offset="0%" stop-color="#ff5c52"/>
+      <stop offset="25%" stop-color="#e2231a"/>
+      <stop offset="70%" stop-color="#ad120b"/>
+      <stop offset="100%" stop-color="#660500"/>
+    </radialGradient>
+
+    <linearGradient id="vortex-arc" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.95"/>
+      <stop offset="65%" stop-color="#0088ff" stop-opacity="0.45"/>
+      <stop offset="88%" stop-color="#ff3b30" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#e2231a" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="chassis-shadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#000000" flood-opacity="0.75"/>
+    </filter>
+
+    <filter id="red-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- 1. Outer ThinkPad Squircle Chassis -->
+  <rect x="32" y="32" width="448" height="448" rx="96" ry="96"
+        fill="url(#chassis-grad)"
+        stroke="url(#bezel-rim)" stroke-width="3"
+        filter="url(#chassis-shadow)"/>
+
+  <!-- Subtle Precision Bevel Highlight on Squircle -->
+  <rect x="34" y="34" width="444" height="444" rx="94" ry="94"
+        fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.1"/>
+
+  <!-- 2. Circular Fan Shroud Outer Assembly -->
+  <circle cx="256" cy="256" r="198" fill="#111319" stroke="#252a36" stroke-width="2.5"/>
+  <circle cx="256" cy="256" r="194" fill="url(#chamber-depth)"/>
+
+  <!-- Outer Machined Chamfer Ring -->
+  <circle cx="256" cy="256" r="186" fill="none" stroke="#2a3040" stroke-width="1" opacity="0.6"/>
+
+  <!-- Perimeter Stator Ticks -->
+  <g>
+    <line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(0 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(10 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(20 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(30 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(40 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(50 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(60 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(70 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(80 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(90 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(100 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(110 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(120 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(130 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(140 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(150 256 256)"/><line x1="256" y1="60" x2="256" y2="66" stroke="#3e4659" stroke-width="1.6" stroke-linecap="round" opacity="0.45" transform="rotate(160 256 256)"/><line x1="256" y1="58" x2="256" y2="66" stroke="#00d2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" transform="rotate(170 256 256)"/><line x1="256" y1="58" x2="256" y2="66" stroke="#00d2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" transform="rotate(180 256 256)"/><line x1="256" y1="58" x2="256" y2="66" stroke="#00d2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" transform="rotate(190 256 256)"/><line x1="256" y1="58" x2="256" y2="66" stroke="#00d2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" transform="rotate(200 256 256)"/><line x1="256" y1="58" x2="256" y2="66" stroke="#00d2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" transform="rotate(210 256 256)"/><line x1="256" y1="58" x2="256" y2="66" stroke="#00d2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" transform="rotate(220 256 256)"/><line x1="256" y1="58" x2="256" y2="66" stroke="#00d2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" transform="rotate(230 256 256)"/><line x1="256" y1="58" x2="256" y2="66" stroke="#00d2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" transform="rotate(240 256 256)"/><line x1="256" y1="58" x2="256" y2="66" stroke="#00d2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" transform="rotate(250 256 256)"/><line x1="256" y1="58" x2="256" y2="66" stroke="#00d2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" transform="rotate(260 256 256)"/><line x1="256" y1="58" x2="256" y2="66" stroke="#00d2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" transform="rotate(270 256 256)"/><line x1="256" y1="58" x2="256" y2="66" stroke="#00d2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" transform="rotate(280 256 256)"/><line x1="256" y1="58" x2="256" y2="66" stroke="#00d2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.9" transform="rotate(290 256 256)"/><line x1="256" y1="57" x2="256" y2="66" stroke="#ff3b30" stroke-width="2.4" stroke-linecap="round" opacity="0.95" transform="rotate(300 256 256)"/><line x1="256" y1="57" x2="256" y2="66" stroke="#ff3b30" stroke-width="2.4" stroke-linecap="round" opacity="0.95" transform="rotate(310 256 256)"/><line x1="256" y1="57" x2="256" y2="66" stroke="#ff3b30" stroke-width="2.4" stroke-linecap="round" opacity="0.95" transform="rotate(320 256 256)"/><line x1="256" y1="57" x2="256" y2="66" stroke="#ff3b30" stroke-width="2.4" stroke-linecap="round" opacity="0.95" transform="rotate(330 256 256)"/><line x1="256" y1="57" x2="256" y2="66" stroke="#ff3b30" stroke-width="2.4" stroke-linecap="round" opacity="0.95" transform="rotate(340 256 256)"/><line x1="256" y1="57" x2="256" y2="66" stroke="#ff3b30" stroke-width="2.4" stroke-linecap="round" opacity="0.95" transform="rotate(350 256 256)"/>
+  </g>
+
+  <!-- Airflow Velocity Ring / Indicator Arc -->
+  <circle cx="256" cy="256" r="172" fill="none" stroke="#1c202a" stroke-width="2.5"/>
+  <circle cx="256" cy="256" r="172" fill="none" stroke="url(#vortex-arc)" stroke-width="3.5"
+          stroke-dasharray="310 800" stroke-linecap="round" transform="rotate(-65 256 256)"/>
+
+  <!-- 3. Aerodynamic Turbine Impeller Blades (11-Blade High-Efficiency Impeller) -->
+  <g>
+    
+        <g transform="rotate(0.00 256 256)">
+          <!-- Blade drop shadow -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="#000000" opacity="0.65" transform="translate(1.5, 3.5)"/>
+          <!-- Blade body with high-tech metallic shading -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="url(#blade-grad)" stroke="#262b38" stroke-width="1.2"/>
+          <!-- Leading edge aerodynamic highlight -->
+          <path d="M 210 84 C 212 128, 236 168, 252 196"
+                fill="none" stroke="url(#edge-highlight)" stroke-width="2.2" stroke-linecap="round" opacity="0.95"/>
+          <!-- Subtle air-channel ribbing -->
+          <path d="M 224 79 C 230 115, 249 152, 258 192"
+                fill="none" stroke="#ffffff" stroke-width="0.8" stroke-linecap="round" opacity="0.22"/>
+        </g>
+        
+        <g transform="rotate(32.73 256 256)">
+          <!-- Blade drop shadow -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="#000000" opacity="0.65" transform="translate(1.5, 3.5)"/>
+          <!-- Blade body with high-tech metallic shading -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="url(#blade-grad)" stroke="#262b38" stroke-width="1.2"/>
+          <!-- Leading edge aerodynamic highlight -->
+          <path d="M 210 84 C 212 128, 236 168, 252 196"
+                fill="none" stroke="url(#edge-highlight)" stroke-width="2.2" stroke-linecap="round" opacity="0.95"/>
+          <!-- Subtle air-channel ribbing -->
+          <path d="M 224 79 C 230 115, 249 152, 258 192"
+                fill="none" stroke="#ffffff" stroke-width="0.8" stroke-linecap="round" opacity="0.22"/>
+        </g>
+        
+        <g transform="rotate(65.45 256 256)">
+          <!-- Blade drop shadow -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="#000000" opacity="0.65" transform="translate(1.5, 3.5)"/>
+          <!-- Blade body with high-tech metallic shading -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="url(#blade-grad)" stroke="#262b38" stroke-width="1.2"/>
+          <!-- Leading edge aerodynamic highlight -->
+          <path d="M 210 84 C 212 128, 236 168, 252 196"
+                fill="none" stroke="url(#edge-highlight)" stroke-width="2.2" stroke-linecap="round" opacity="0.95"/>
+          <!-- Subtle air-channel ribbing -->
+          <path d="M 224 79 C 230 115, 249 152, 258 192"
+                fill="none" stroke="#ffffff" stroke-width="0.8" stroke-linecap="round" opacity="0.22"/>
+        </g>
+        
+        <g transform="rotate(98.18 256 256)">
+          <!-- Blade drop shadow -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="#000000" opacity="0.65" transform="translate(1.5, 3.5)"/>
+          <!-- Blade body with high-tech metallic shading -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="url(#blade-grad)" stroke="#262b38" stroke-width="1.2"/>
+          <!-- Leading edge aerodynamic highlight -->
+          <path d="M 210 84 C 212 128, 236 168, 252 196"
+                fill="none" stroke="url(#edge-highlight)" stroke-width="2.2" stroke-linecap="round" opacity="0.95"/>
+          <!-- Subtle air-channel ribbing -->
+          <path d="M 224 79 C 230 115, 249 152, 258 192"
+                fill="none" stroke="#ffffff" stroke-width="0.8" stroke-linecap="round" opacity="0.22"/>
+        </g>
+        
+        <g transform="rotate(130.91 256 256)">
+          <!-- Blade drop shadow -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="#000000" opacity="0.65" transform="translate(1.5, 3.5)"/>
+          <!-- Blade body with high-tech metallic shading -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="url(#blade-grad)" stroke="#262b38" stroke-width="1.2"/>
+          <!-- Leading edge aerodynamic highlight -->
+          <path d="M 210 84 C 212 128, 236 168, 252 196"
+                fill="none" stroke="url(#edge-highlight)" stroke-width="2.2" stroke-linecap="round" opacity="0.95"/>
+          <!-- Subtle air-channel ribbing -->
+          <path d="M 224 79 C 230 115, 249 152, 258 192"
+                fill="none" stroke="#ffffff" stroke-width="0.8" stroke-linecap="round" opacity="0.22"/>
+        </g>
+        
+        <g transform="rotate(163.64 256 256)">
+          <!-- Blade drop shadow -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="#000000" opacity="0.65" transform="translate(1.5, 3.5)"/>
+          <!-- Blade body with high-tech metallic shading -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="url(#blade-grad)" stroke="#262b38" stroke-width="1.2"/>
+          <!-- Leading edge aerodynamic highlight -->
+          <path d="M 210 84 C 212 128, 236 168, 252 196"
+                fill="none" stroke="url(#edge-highlight)" stroke-width="2.2" stroke-linecap="round" opacity="0.95"/>
+          <!-- Subtle air-channel ribbing -->
+          <path d="M 224 79 C 230 115, 249 152, 258 192"
+                fill="none" stroke="#ffffff" stroke-width="0.8" stroke-linecap="round" opacity="0.22"/>
+        </g>
+        
+        <g transform="rotate(196.36 256 256)">
+          <!-- Blade drop shadow -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="#000000" opacity="0.65" transform="translate(1.5, 3.5)"/>
+          <!-- Blade body with high-tech metallic shading -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="url(#blade-grad)" stroke="#262b38" stroke-width="1.2"/>
+          <!-- Leading edge aerodynamic highlight -->
+          <path d="M 210 84 C 212 128, 236 168, 252 196"
+                fill="none" stroke="url(#edge-highlight)" stroke-width="2.2" stroke-linecap="round" opacity="0.95"/>
+          <!-- Subtle air-channel ribbing -->
+          <path d="M 224 79 C 230 115, 249 152, 258 192"
+                fill="none" stroke="#ffffff" stroke-width="0.8" stroke-linecap="round" opacity="0.22"/>
+        </g>
+        
+        <g transform="rotate(229.09 256 256)">
+          <!-- Blade drop shadow -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="#000000" opacity="0.65" transform="translate(1.5, 3.5)"/>
+          <!-- Blade body with high-tech metallic shading -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="url(#blade-grad)" stroke="#262b38" stroke-width="1.2"/>
+          <!-- Leading edge aerodynamic highlight -->
+          <path d="M 210 84 C 212 128, 236 168, 252 196"
+                fill="none" stroke="url(#edge-highlight)" stroke-width="2.2" stroke-linecap="round" opacity="0.95"/>
+          <!-- Subtle air-channel ribbing -->
+          <path d="M 224 79 C 230 115, 249 152, 258 192"
+                fill="none" stroke="#ffffff" stroke-width="0.8" stroke-linecap="round" opacity="0.22"/>
+        </g>
+        
+        <g transform="rotate(261.82 256 256)">
+          <!-- Blade drop shadow -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="#000000" opacity="0.65" transform="translate(1.5, 3.5)"/>
+          <!-- Blade body with high-tech metallic shading -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="url(#blade-grad)" stroke="#262b38" stroke-width="1.2"/>
+          <!-- Leading edge aerodynamic highlight -->
+          <path d="M 210 84 C 212 128, 236 168, 252 196"
+                fill="none" stroke="url(#edge-highlight)" stroke-width="2.2" stroke-linecap="round" opacity="0.95"/>
+          <!-- Subtle air-channel ribbing -->
+          <path d="M 224 79 C 230 115, 249 152, 258 192"
+                fill="none" stroke="#ffffff" stroke-width="0.8" stroke-linecap="round" opacity="0.22"/>
+        </g>
+        
+        <g transform="rotate(294.55 256 256)">
+          <!-- Blade drop shadow -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="#000000" opacity="0.65" transform="translate(1.5, 3.5)"/>
+          <!-- Blade body with high-tech metallic shading -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="url(#blade-grad)" stroke="#262b38" stroke-width="1.2"/>
+          <!-- Leading edge aerodynamic highlight -->
+          <path d="M 210 84 C 212 128, 236 168, 252 196"
+                fill="none" stroke="url(#edge-highlight)" stroke-width="2.2" stroke-linecap="round" opacity="0.95"/>
+          <!-- Subtle air-channel ribbing -->
+          <path d="M 224 79 C 230 115, 249 152, 258 192"
+                fill="none" stroke="#ffffff" stroke-width="0.8" stroke-linecap="round" opacity="0.22"/>
+        </g>
+        
+        <g transform="rotate(327.27 256 256)">
+          <!-- Blade drop shadow -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="#000000" opacity="0.65" transform="translate(1.5, 3.5)"/>
+          <!-- Blade body with high-tech metallic shading -->
+          <path d="M 252 196 C 236 168, 212 128, 210 84 C 210 75, 230 73, 243 81 C 255 120, 269 162, 264 196 Z"
+                fill="url(#blade-grad)" stroke="#262b38" stroke-width="1.2"/>
+          <!-- Leading edge aerodynamic highlight -->
+          <path d="M 210 84 C 212 128, 236 168, 252 196"
+                fill="none" stroke="url(#edge-highlight)" stroke-width="2.2" stroke-linecap="round" opacity="0.95"/>
+          <!-- Subtle air-channel ribbing -->
+          <path d="M 224 79 C 230 115, 249 152, 258 192"
+                fill="none" stroke="#ffffff" stroke-width="0.8" stroke-linecap="round" opacity="0.22"/>
+        </g>
+        
+  </g>
+
+  <!-- Center Hub Ambient Occlusion -->
+  <circle cx="256" cy="258" r="66" fill="#040507" opacity="0.75"/>
+
+  <!-- 4. Machined Hub Base -->
+  <circle cx="256" cy="256" r="64" fill="url(#hub-metallic)" stroke="#474f63" stroke-width="2"/>
+  <circle cx="256" cy="256" r="54" fill="#101217" stroke="#222631" stroke-width="1.5"/>
+
+  <!-- 5. Iconic ThinkPad TrackPoint Ruby Dome -->
+  <!-- Ambient red bloom -->
+  <circle cx="256" cy="256" r="42" fill="#e2231a" opacity="0.32" filter="url(#red-glow)"/>
+
+  <!-- Ruby Dome Base -->
+  <circle cx="256" cy="256" r="40" fill="url(#trackpoint-glow)" stroke="#660a04" stroke-width="1.5"/>
+
+  <!-- Concentric TrackPoint Tactile Knurling Rings -->
+  <circle cx="256" cy="256" r="32" fill="none" stroke="#ffffff" stroke-width="0.8" stroke-dasharray="2.5 2" opacity="0.25"/>
+  <circle cx="256" cy="256" r="24" fill="none" stroke="#ffffff" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.28"/>
+  <circle cx="256" cy="256" r="16" fill="none" stroke="#ffffff" stroke-width="0.8" opacity="0.32"/>
+  <circle cx="256" cy="256" r="8" fill="none" stroke="#ffffff" stroke-width="0.8" opacity="0.36"/>
+
+  <!-- Specular 3D Highlight on Rubber Dome -->
+  <ellipse cx="243" cy="241" rx="14" ry="9" transform="rotate(-30 243 241)"
+           fill="#ffffff" opacity="0.35" />
+  <circle cx="241" cy="239" r="3.5" fill="#ffffff" opacity="0.6"/>
+
+  <!-- Center Tactile Core -->
+  <circle cx="256" cy="256" r="3" fill="#ff786e"/>
+</svg>
