@@ -83,10 +83,13 @@ class LiveGraph(Gtk.Image):
             cr.stroke()
 
         # 2. Horizontal Reference Lines & Labels
+        axis_font_size = max(9, min(12, int(plot_h * 0.024)))
         cr.select_font_face("Ubuntu Sans Mono", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-        cr.set_font_size(9)
+        cr.set_font_size(axis_font_size)
 
-        for temp_ref in [40.0, 55.0, 70.0, 85.0]:
+        temp_refs = [40.0, 50.0, 60.0, 70.0, 80.0, 85.0] if plot_h > 240 else [40.0, 55.0, 70.0, 85.0]
+
+        for temp_ref in temp_refs:
             y_norm = 1.0 - ((temp_ref - self.min_temp) / (self.max_temp - self.min_temp))
             y_pos = margin_top + y_norm * plot_h
 
@@ -115,7 +118,8 @@ class LiveGraph(Gtk.Image):
 
         # 3. Draw Fan Speed Curve (Emerald Line with Dash Pattern)
         step_x = plot_w / float(self.history_len - 1)
-        cr.set_line_width(1.8)
+        rpm_line_w = max(1.8, min(3.0, plot_h * 0.005))
+        cr.set_line_width(rpm_line_w)
         cr.set_dash([5.0, 2.5])
         cr.set_source_rgba(0.06, 0.73, 0.50, 0.90)
 
@@ -137,7 +141,7 @@ class LiveGraph(Gtk.Image):
 
         # Small End-point Indicator Node on Fan Curve
         cr.set_source_rgba(0.06, 0.73, 0.50, 1.0)
-        cr.arc(last_rpm_x, last_rpm_y, 2.5, 0, 2 * math.pi)
+        cr.arc(last_rpm_x, last_rpm_y, max(2.5, min(5.0, plot_h * 0.007)), 0, 2 * math.pi)
         cr.fill()
 
         # 4. Draw CPU Temperature Curve (Cyan Waveform with Neon Bloom)
@@ -165,18 +169,18 @@ class LiveGraph(Gtk.Image):
         cr.fill_preserve()
 
         # Pass 1: Neon Bloom Glow Pass
-        cr.set_line_width(6.0)
+        cr.set_line_width(max(6.0, min(12.0, plot_h * 0.018)))
         cr.set_source_rgba(0.0, 0.88, 1.0, 0.20)
         cr.stroke_preserve()
 
         # Pass 2: Crisp Core Trace Line
-        cr.set_line_width(2.0)
+        cr.set_line_width(max(2.0, min(4.0, plot_h * 0.006)))
         cr.set_source_rgba(0.0, 0.92, 1.0, 0.98)
         cr.stroke()
 
         # Small End-point Indicator Node on CPU Curve
         cr.set_source_rgba(0.0, 0.92, 1.0, 1.0)
-        cr.arc(last_temp_x, last_temp_y, 3.0, 0, 2 * math.pi)
+        cr.arc(last_temp_x, last_temp_y, max(3.0, min(6.0, plot_h * 0.009)), 0, 2 * math.pi)
         cr.fill()
 
         # Border around oscilloscope frame

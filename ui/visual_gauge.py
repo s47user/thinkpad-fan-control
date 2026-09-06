@@ -69,7 +69,7 @@ class VisualGauge(Gtk.Image):
 
         cx = w / 2.0
         cy = h / 2.0 + 4.0
-        radius = min(w * 0.40, h * 0.38, 122.0)
+        radius = min(w * 0.40, h * 0.38, 250.0)
         scale = max(0.85, radius / 75.0)
 
         start_angle = math.pi * 0.75

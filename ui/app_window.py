@@ -519,6 +519,7 @@ class AppWindow(Gtk.Window):
         gauge_card.get_style_context().add_class("panel-card")
         gauge_card.set_size_request(300, -1)
         gauge_card.set_vexpand(True)
+        self.gauge_card = gauge_card
 
         gauge_header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         lbl_gh = Gtk.Label(label="FAN TACHOMETER")
@@ -795,9 +796,8 @@ class AppWindow(Gtk.Window):
     def _on_window_size_allocate(self, widget, alloc):
         w = alloc.width
         h = alloc.height
-        cockpit_max_w = 1120
-        h_margin = max(16, (w - cockpit_max_w) // 2)
-        v_margin = max(12, min(32, (h - 580) // 5))
+        h_margin = max(16, min(28, int(w * 0.015)))
+        v_margin = max(10, min(20, int(h * 0.015)))
 
         if hasattr(self, "workspace"):
             self.workspace.set_margin_left(h_margin)
@@ -808,6 +808,11 @@ class AppWindow(Gtk.Window):
         if hasattr(self, "quickbar"):
             self.quickbar.set_margin_left(h_margin)
             self.quickbar.set_margin_right(h_margin)
+
+        if hasattr(self, "gauge_card"):
+            available_w = w - (h_margin * 2) - 14
+            gauge_w = max(280, min(750, int(available_w * 0.35)))
+            self.gauge_card.set_size_request(gauge_w, -1)
 
     def _on_toggle_fullscreen(self, btn=None):
         win = self.get_window()
