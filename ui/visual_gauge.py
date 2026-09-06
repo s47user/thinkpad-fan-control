@@ -24,8 +24,8 @@ class VisualGauge(Gtk.Image):
         self.level_label = "Auto (BIOS)"
 
         self.set_size_request(min_width, min_height)
-        self.set_hexpand(True)
-        self.set_vexpand(True)
+        self.set_hexpand(False)
+        self.set_vexpand(False)
         self.connect("size-allocate", self._on_size_allocate)
         self.redraw()
 
