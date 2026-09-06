@@ -8,5 +8,5 @@ from .safety_guard import SafetyGuard
 from .curve_engine import SmartCurveEngine
 from .notifier import NotificationManager
 
-__version__ = "1.1.6"
+__version__ = "1.1.7"
 __all__ = ["FanController", "SafetyGuard", "SmartCurveEngine", "NotificationManager", "__version__"]

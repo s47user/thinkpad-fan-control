@@ -295,23 +295,6 @@ button.btn-toggle-sensors:hover {
     letter-spacing: 0.3px;
 }
 
-button.btn-header-action {
-    background-image: none;
-    background-color: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
-    padding: 3px 8px;
-    color: #a1a1aa;
-    font-size: 12px;
-}
-
-button.btn-header-action:hover {
-    background-image: none;
-    background-color: #1a1c27;
-    border-color: rgba(255, 255, 255, 0.20);
-    color: #fafafa;
-}
-
 scrolledwindow {
     background-color: transparent;
     border: none;
@@ -392,7 +375,6 @@ class AppWindow(Gtk.Window):
         self.connect("delete-event", self._on_close_event)
         self.connect("size-allocate", self._on_window_size_allocate)
         self.connect("key-press-event", self._on_key_press_event)
-        self.connect("window-state-event", self._on_window_state_event)
 
     def _apply_css(self):
         screen = Gdk.Screen.get_default()
@@ -415,15 +397,6 @@ class AppWindow(Gtk.Window):
         ec_pill = Gtk.Label(label="DIRECT EC CONTROL")
         ec_pill.get_style_context().add_class("status-pill")
         header.pack_start(ec_pill)
-
-        # Fullscreen Toggle Button
-        self.btn_fullscreen = Gtk.Button()
-        self.btn_fullscreen.get_style_context().add_class("btn-header-action")
-        self.btn_fullscreen.set_tooltip_text("Toggle Fullscreen (F11)")
-        self.lbl_fs_icon = Gtk.Label(label="⛶")
-        self.btn_fullscreen.add(self.lbl_fs_icon)
-        self.btn_fullscreen.connect("clicked", self._on_toggle_fullscreen)
-        header.pack_end(self.btn_fullscreen)
         
         title_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         red_dot = Gtk.Label(label="●")
@@ -858,12 +831,6 @@ class AppWindow(Gtk.Window):
                 self.unfullscreen()
                 return True
         return False
-
-    def _on_window_state_event(self, widget, event):
-        is_fs = bool(event.new_window_state & Gdk.WindowState.FULLSCREEN)
-        if hasattr(self, "lbl_fs_icon"):
-            self.lbl_fs_icon.set_text("🗗" if is_fs else "⛶")
-            self.btn_fullscreen.set_tooltip_text("Exit Fullscreen (Esc / F11)" if is_fs else "Toggle Fullscreen (F11)")
 
     def _on_app_quit(self):
         self.safety.restore_safe_state()
