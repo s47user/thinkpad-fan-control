@@ -12,12 +12,15 @@ class LiveGraph(Gtk.Image):
     """
     Real-time 60-second scrolling telemetry graph.
     Plots CPU Temperature (°C) and Fan Speed (RPM) with 85°C safety trip line.
+    Dynamically renders to allocated dimensions.
     """
 
-    def __init__(self, width: int = 420, height: int = 180, history_len: int = HISTORY_SECONDS):
+    def __init__(self, min_width: int = 380, min_height: int = 180, history_len: int = HISTORY_SECONDS):
         super().__init__()
-        self.width = width
-        self.height = height
+        self.min_width = min_width
+        self.min_height = min_height
+        self.width = min_width
+        self.height = min_height
         self.history_len = history_len
         self.temp_history = collections.deque([48.0] * history_len, maxlen=history_len)
         self.rpm_history = collections.deque([3400] * history_len, maxlen=history_len)
@@ -26,8 +29,19 @@ class LiveGraph(Gtk.Image):
         self.max_temp = 95.0
         self.max_rpm = 5500.0
 
-        self.set_size_request(width, height)
+        self.set_size_request(min_width, min_height)
+        self.set_hexpand(True)
+        self.set_vexpand(True)
+        self.connect("size-allocate", self._on_size_allocate)
         self.redraw()
+
+    def _on_size_allocate(self, widget, alloc):
+        w = max(self.min_width, alloc.width)
+        h = max(self.min_height, alloc.height)
+        if abs(w - self.width) > 2 or abs(h - self.height) > 2:
+            self.width = w
+            self.height = h
+            self.redraw()
 
     def add_telemetry(self, temp_c: float, rpm: int):
         self.temp_history.append(float(temp_c))
@@ -58,11 +72,12 @@ class LiveGraph(Gtk.Image):
         cr.rectangle(margin_left, margin_top, plot_w, plot_h)
         cr.fill()
 
-        # Vertical Time Grid Lines (every 10s across 60s history)
+        # Vertical Time Grid Lines (Adaptive intervals across history)
         cr.set_line_width(0.8)
         cr.set_source_rgba(0.18, 0.22, 0.30, 0.25)
-        for t_step in range(1, 6):
-            vx = margin_left + (plot_w / 6.0) * t_step
+        num_v = max(6, int(plot_w / 70.0))
+        for t_step in range(1, num_v):
+            vx = margin_left + (plot_w / float(num_v)) * t_step
             cr.move_to(vx, margin_top)
             cr.line_to(vx, margin_top + plot_h)
             cr.stroke()

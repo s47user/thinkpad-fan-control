@@ -294,6 +294,23 @@ button.btn-toggle-sensors:hover {
     font-weight: 600;
     letter-spacing: 0.3px;
 }
+
+button.btn-header-action {
+    background-image: none;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 3px 8px;
+    color: #a1a1aa;
+    font-size: 12px;
+}
+
+button.btn-header-action:hover {
+    background-image: none;
+    background-color: #1a1c27;
+    border-color: rgba(255, 255, 255, 0.20);
+    color: #fafafa;
+}
 """
 
 class AppWindow(Gtk.Window):
@@ -347,6 +364,9 @@ class AppWindow(Gtk.Window):
         GLib.timeout_add(1000, self._on_sensor_tick)
 
         self.connect("delete-event", self._on_close_event)
+        self.connect("size-allocate", self._on_window_size_allocate)
+        self.connect("key-press-event", self._on_key_press_event)
+        self.connect("window-state-event", self._on_window_state_event)
 
     def _apply_css(self):
         screen = Gdk.Screen.get_default()
@@ -369,6 +389,15 @@ class AppWindow(Gtk.Window):
         ec_pill = Gtk.Label(label="DIRECT EC CONTROL")
         ec_pill.get_style_context().add_class("status-pill")
         header.pack_start(ec_pill)
+
+        # Fullscreen Toggle Button
+        self.btn_fullscreen = Gtk.Button()
+        self.btn_fullscreen.get_style_context().add_class("btn-header-action")
+        self.btn_fullscreen.set_tooltip_text("Toggle Fullscreen (F11)")
+        self.lbl_fs_icon = Gtk.Label(label="⛶")
+        self.btn_fullscreen.add(self.lbl_fs_icon)
+        self.btn_fullscreen.connect("clicked", self._on_toggle_fullscreen)
+        header.pack_end(self.btn_fullscreen)
         
         title_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         red_dot = Gtk.Label(label="●")
@@ -404,6 +433,7 @@ class AppWindow(Gtk.Window):
         # 3. Quick Telemetry Bar
         quickbar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=16)
         quickbar.get_style_context().add_class("quickbar")
+        self.quickbar = quickbar
 
         # CPU Temp
         box_temp = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
@@ -478,6 +508,7 @@ class AppWindow(Gtk.Window):
         workspace.set_margin_bottom(14)
         workspace.set_margin_left(16)
         workspace.set_margin_right(16)
+        self.workspace = workspace
         root_vbox.pack_start(workspace, True, True, 0)
 
         top_panels = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=14)
@@ -486,7 +517,8 @@ class AppWindow(Gtk.Window):
         # Left Panel: Visual Speedometer Gauge Card
         gauge_card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
         gauge_card.get_style_context().add_class("panel-card")
-        gauge_card.set_size_request(260, -1)
+        gauge_card.set_size_request(300, -1)
+        gauge_card.set_vexpand(True)
 
         gauge_header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         lbl_gh = Gtk.Label(label="FAN TACHOMETER")
@@ -760,8 +792,50 @@ class AppWindow(Gtk.Window):
         self._on_app_quit()
         return False
 
+    def _on_window_size_allocate(self, widget, alloc):
+        w = alloc.width
+        h = alloc.height
+        cockpit_max_w = 1120
+        h_margin = max(16, (w - cockpit_max_w) // 2)
+        v_margin = max(12, min(32, (h - 580) // 5))
+
+        if hasattr(self, "workspace"):
+            self.workspace.set_margin_left(h_margin)
+            self.workspace.set_margin_right(h_margin)
+            self.workspace.set_margin_top(v_margin)
+            self.workspace.set_margin_bottom(v_margin)
+
+        if hasattr(self, "quickbar"):
+            self.quickbar.set_margin_left(h_margin)
+            self.quickbar.set_margin_right(h_margin)
+
+    def _on_toggle_fullscreen(self, btn=None):
+        win = self.get_window()
+        if win and (win.get_state() & Gdk.WindowState.FULLSCREEN):
+            self.unfullscreen()
+        else:
+            self.fullscreen()
+
+    def _on_key_press_event(self, widget, event):
+        if event.keyval == Gdk.KEY_F11:
+            self._on_toggle_fullscreen()
+            return True
+        elif event.keyval == Gdk.KEY_Escape:
+            win = self.get_window()
+            if win and (win.get_state() & Gdk.WindowState.FULLSCREEN):
+                self.unfullscreen()
+                return True
+        return False
+
+    def _on_window_state_event(self, widget, event):
+        is_fs = bool(event.new_window_state & Gdk.WindowState.FULLSCREEN)
+        if hasattr(self, "lbl_fs_icon"):
+            self.lbl_fs_icon.set_text("🗗" if is_fs else "⛶")
+            self.btn_fullscreen.set_tooltip_text("Exit Fullscreen (Esc / F11)" if is_fs else "Toggle Fullscreen (F11)")
+
     def _on_app_quit(self):
         self.safety.restore_safe_state()
         self.safety.stop()
         Gtk.main_quit()
+
 

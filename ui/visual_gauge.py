@@ -7,21 +7,35 @@ from gi.repository import Gtk, GdkPixbuf, GLib
 
 class VisualGauge(Gtk.Image):
     """
-    Precision circular speedometer gauge drawn with Cairo.
-    Displays fan speed from 0 to 5,500 RPM with dynamic color transitions.
+    Futuristic Machined Concentric Turbine Tachometer.
+    Inspired by ThinkPad's 11-blade aerodynamic impeller and TrackPoint core.
+    Dynamically responds to container resizing.
     """
 
-    def __init__(self, width: int = 240, height: int = 240, max_rpm: int = 5500):
+    def __init__(self, min_width: int = 240, min_height: int = 200, max_rpm: int = 5500):
         super().__init__()
-        self.width = width
-        self.height = height
+        self.min_width = min_width
+        self.min_height = min_height
+        self.width = min_width
+        self.height = min_height
         self.max_rpm = max_rpm
         self.current_rpm = 0.0
         self.target_rpm = 0.0
         self.level_label = "Auto (BIOS)"
 
-        self.set_size_request(width, height)
+        self.set_size_request(min_width, min_height)
+        self.set_hexpand(True)
+        self.set_vexpand(True)
+        self.connect("size-allocate", self._on_size_allocate)
         self.redraw()
+
+    def _on_size_allocate(self, widget, alloc):
+        w = max(self.min_width, alloc.width)
+        h = max(self.min_height, alloc.height)
+        if abs(w - self.width) > 2 or abs(h - self.height) > 2:
+            self.width = w
+            self.height = h
+            self.redraw()
 
     def set_target_rpm(self, rpm: float, level_str: str = ""):
         self.target_rpm = float(max(0, min(6500, rpm)))
@@ -54,23 +68,24 @@ class VisualGauge(Gtk.Image):
         cr.paint()
 
         cx = w / 2.0
-        cy = h / 2.0 + 8.0
-        radius = min(w, h) * 0.38
+        cy = h / 2.0 + 4.0
+        radius = min(w * 0.40, h * 0.38, 122.0)
+        scale = max(0.85, radius / 75.0)
 
         start_angle = math.pi * 0.75
         end_angle = math.pi * 2.25
         total_angle = end_angle - start_angle
 
         # 1. Outer Concentric Turbine Shroud (Logo Inspired)
-        chamber_r = radius + 14.0
+        chamber_r = radius + (14.0 * scale)
         cr.set_source_rgba(0.05, 0.06, 0.08, 1.0)
-        cr.arc(cx, cy, chamber_r + 4.0, 0, 2 * math.pi)
+        cr.arc(cx, cy, chamber_r + (4.0 * scale), 0, 2 * math.pi)
         cr.fill()
 
         # Outer Machined Chamfer Rim
-        cr.set_line_width(1.5)
+        cr.set_line_width(1.5 * scale)
         cr.set_source_rgba(0.18, 0.20, 0.26, 0.7)
-        cr.arc(cx, cy, chamber_r + 4.0, 0, 2 * math.pi)
+        cr.arc(cx, cy, chamber_r + (4.0 * scale), 0, 2 * math.pi)
         cr.stroke()
 
         # 2. Perimeter Stator Ticks (36 Ticks around full circumference)
@@ -81,14 +96,14 @@ class VisualGauge(Gtk.Image):
             tick_pct = i / float(num_stator_ticks)
 
             t_inner = chamber_r + 1.0
-            t_outer = chamber_r + (4.5 if i % 3 == 0 else 3.0)
+            t_outer = chamber_r + ((4.5 if i % 3 == 0 else 3.0) * scale)
 
             x1 = cx + math.cos(tick_angle) * t_inner
             y1 = cy + math.sin(tick_angle) * t_inner
             x2 = cx + math.cos(tick_angle) * t_outer
             y2 = cy + math.sin(tick_angle) * t_outer
 
-            cr.set_line_width(1.2 if i % 3 == 0 else 0.8)
+            cr.set_line_width((1.2 if i % 3 == 0 else 0.8) * scale)
             # Stator illumination follows current RPM fraction
             if tick_pct <= fraction and fraction > 0.05:
                 if tick_pct < 0.45:
@@ -105,7 +120,7 @@ class VisualGauge(Gtk.Image):
             cr.stroke()
 
         # 3. Background Gauge Arc Track
-        cr.set_line_width(10.0)
+        cr.set_line_width(10.0 * scale)
         cr.set_line_cap(cairo.LINE_CAP_ROUND)
         cr.set_source_rgba(0.10, 0.11, 0.15, 1.0)
         cr.arc(cx, cy, radius, start_angle, end_angle)
@@ -124,13 +139,13 @@ class VisualGauge(Gtk.Image):
                 r, g, b = 0.89, 0.14, 0.10 # Crimson
 
             # Translucent Neon Bloom Pass
-            cr.set_line_width(16.0)
+            cr.set_line_width(16.0 * scale)
             cr.set_source_rgba(r, g, b, 0.22)
             cr.arc(cx, cy, radius, start_angle, active_angle)
             cr.stroke()
 
             # Crisp Core Trace Pass
-            cr.set_line_width(9.0)
+            cr.set_line_width(9.0 * scale)
             cr.set_source_rgba(r, g, b, 0.98)
             cr.arc(cx, cy, radius, start_angle, active_angle)
             cr.stroke()
@@ -142,15 +157,15 @@ class VisualGauge(Gtk.Image):
             angle = start_angle + (total_angle * t_pct)
             is_major = (i % 2 == 0)
 
-            inner_r = radius - (12 if is_major else 6)
-            outer_r = radius - 4
+            inner_r = radius - ((12.0 if is_major else 6.0) * scale)
+            outer_r = radius - (4.0 * scale)
 
             x1 = cx + math.cos(angle) * inner_r
             y1 = cy + math.sin(angle) * inner_r
             x2 = cx + math.cos(angle) * outer_r
             y2 = cy + math.sin(angle) * outer_r
 
-            cr.set_line_width(1.4 if is_major else 0.8)
+            cr.set_line_width((1.4 if is_major else 0.8) * scale)
             if is_major:
                 cr.set_source_rgba(0.42, 0.46, 0.54, 0.75)
             else:
@@ -160,31 +175,31 @@ class VisualGauge(Gtk.Image):
             cr.stroke()
 
         # 6. Center Metallic Hub with Ruby Core Dome
-        hub_r = radius - 16.0
+        hub_r = radius - (16.0 * scale)
         # Bezel rim
         cr.set_source_rgba(0.12, 0.14, 0.19, 1.0)
         cr.arc(cx, cy, hub_r, 0, 2 * math.pi)
         cr.fill()
 
-        cr.set_line_width(1.2)
+        cr.set_line_width(1.2 * scale)
         cr.set_source_rgba(0.24, 0.27, 0.35, 0.8)
         cr.arc(cx, cy, hub_r, 0, 2 * math.pi)
         cr.stroke()
 
         # Inner dark core plate
         cr.set_source_rgba(0.06, 0.07, 0.10, 1.0)
-        cr.arc(cx, cy, hub_r - 2.5, 0, 2 * math.pi)
+        cr.arc(cx, cy, hub_r - (2.5 * scale), 0, 2 * math.pi)
         cr.fill()
 
         # Center Ruby TrackPoint Core Indicator Dome
-        ruby_y = cy - 22.0
+        ruby_y = cy - (22.0 * scale)
         # Subtle glow
         cr.set_source_rgba(0.89, 0.14, 0.10, 0.35)
-        cr.arc(cx, ruby_y, 5.0, 0, 2 * math.pi)
+        cr.arc(cx, ruby_y, 5.0 * scale, 0, 2 * math.pi)
         cr.fill()
         # Solid dome
         cr.set_source_rgba(0.89, 0.14, 0.10, 1.0)
-        cr.arc(cx, ruby_y, 3.0, 0, 2 * math.pi)
+        cr.arc(cx, ruby_y, 3.0 * scale, 0, 2 * math.pi)
         cr.fill()
 
         # Digital Numerical RPM Readout
@@ -192,25 +207,25 @@ class VisualGauge(Gtk.Image):
         rpm_str = f"{rpm_val:,}"
 
         cr.select_font_face("Ubuntu Sans Mono", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
-        cr.set_font_size(21)
+        cr.set_font_size(int(21 * scale))
         extents = cr.text_extents(rpm_str)
         cr.set_source_rgba(0.98, 0.98, 0.98, 1.0)
-        cr.move_to(cx - extents.width / 2.0 - extents.x_bearing, cy - 3)
+        cr.move_to(cx - extents.width / 2.0 - extents.x_bearing, cy - (3.0 * scale))
         cr.show_text(rpm_str)
 
         # "RPM" Label
         cr.select_font_face("Ubuntu Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
-        cr.set_font_size(9)
+        cr.set_font_size(int(9 * scale))
         extents_lbl = cr.text_extents("RPM")
         cr.set_source_rgba(0.48, 0.50, 0.56, 1.0)
-        cr.move_to(cx - extents_lbl.width / 2.0 - extents_lbl.x_bearing, cy + 12)
+        cr.move_to(cx - extents_lbl.width / 2.0 - extents_lbl.x_bearing, cy + (12.0 * scale))
         cr.show_text("RPM")
 
         # Percentage readout
         pct_val = int(round(fraction * 100))
         pct_str = f"{pct_val}% OF PEAK"
         cr.select_font_face("Ubuntu Sans Mono", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
-        cr.set_font_size(8.5)
+        cr.set_font_size(int(8.5 * scale))
         extents_pct = cr.text_extents(pct_str)
         if fraction < 0.4:
             cr.set_source_rgba(0.0, 0.82, 1.0, 0.9)  # Cyan
@@ -218,7 +233,7 @@ class VisualGauge(Gtk.Image):
             cr.set_source_rgba(0.06, 0.73, 0.50, 0.9) # Emerald
         else:
             cr.set_source_rgba(0.89, 0.14, 0.10, 0.95) # Red
-        cr.move_to(cx - extents_pct.width / 2.0 - extents_pct.x_bearing, cy + 24)
+        cr.move_to(cx - extents_pct.width / 2.0 - extents_pct.x_bearing, cy + (24.0 * scale))
         cr.show_text(pct_str)
 
         # Convert Cairo ARGB32 (BGRA in memory) to RGBA for GdkPixbuf
