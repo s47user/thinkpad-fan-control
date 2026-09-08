@@ -65,14 +65,14 @@ class SmartCurveEngine:
 
         self.load_config()
 
-    def evaluate_temp(self, current_temp: float) -> Optional[str]:
+    def evaluate_temp(self, current_temp: Optional[float]) -> Optional[str]:
         """
         Determines the target fan level for a given temperature.
         Applies hysteresis: step-up is immediate; step-down requires temp <= (threshold - hysteresis)
         and enforces minimum dwell time.
         Returns target level string, or None if in BIOS 'auto' mode or unchanged.
         """
-        if not self.is_curve_active or self.active_profile == "auto":
+        if current_temp is None or not self.is_curve_active or self.active_profile == "auto":
             return None
 
         curve = self.profiles.get(self.active_profile, self.profiles["balanced"])

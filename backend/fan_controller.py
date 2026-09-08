@@ -84,9 +84,10 @@ class FanController:
 
         return status_info
 
-    def get_cpu_temp(self) -> float:
+    def get_cpu_temp(self) -> Optional[float]:
         """
         Retrieves current CPU package temperature in Celsius.
+        Returns None if no thermal sensor is available or readable.
         """
         if self._cached_coretemp_path and os.path.exists(self._cached_coretemp_path):
             try:
@@ -135,7 +136,7 @@ class FanController:
             except Exception:
                 pass
 
-        return 45.0
+        return None
 
     def set_level(self, level: str, allow_elevation: bool = True) -> bool:
         """

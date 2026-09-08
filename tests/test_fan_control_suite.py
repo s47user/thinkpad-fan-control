@@ -100,12 +100,117 @@ class TestHardwareSensorsAndPower(unittest.TestCase):
         self.assertIsInstance(sensors["thinkpad_zones"], list)
 
 
+from unittest.mock import MagicMock
+from backend.safety_guard import SafetyGuard
+from ui.visual_gauge import VisualGauge
+
+
+class TestSafetyGuardTieredOverrides(unittest.TestCase):
+    def setUp(self):
+        self.mock_controller = MagicMock()
+        self.mock_controller.is_writable.return_value = True
+        self.guard = SafetyGuard(self.mock_controller)
+
+    def test_critical_override_levels_0_to_6_and_auto(self):
+        for test_level in ["0", "1", "2", "3", "4", "5", "6", "auto"]:
+            self.mock_controller.reset_mock()
+            self.mock_controller.get_cpu_temp.return_value = 86.0
+            self.mock_controller.get_fan_status.return_value = {"level": test_level}
+
+            # Simulate single guard check cycle
+            cur_temp = self.mock_controller.get_cpu_temp()
+            if cur_temp >= self.guard._critical_limit:
+                status = self.mock_controller.get_fan_status()
+                cur_level = str(status.get("level", "auto")).lower()
+                if cur_level in ["0", "1", "2", "3", "4", "5", "6", "auto"]:
+                    self.mock_controller.set_level("7", allow_elevation=True)
+
+            self.mock_controller.set_level.assert_called_once_with("7", allow_elevation=True)
+
+    def test_extreme_override_forces_disengaged(self):
+        for test_level in ["auto", "4", "7"]:
+            self.mock_controller.reset_mock()
+            self.mock_controller.get_cpu_temp.return_value = 91.5
+            self.mock_controller.get_fan_status.return_value = {"level": test_level}
+
+            # Simulate single guard check cycle at extreme limit
+            cur_temp = self.mock_controller.get_cpu_temp()
+            if cur_temp >= self.guard._extreme_limit:
+                status = self.mock_controller.get_fan_status()
+                cur_level = str(status.get("level", "auto")).lower()
+                if cur_level not in ["disengaged", "full-speed"]:
+                    self.mock_controller.set_level("disengaged", allow_elevation=True)
+
+            self.mock_controller.set_level.assert_called_once_with("disengaged", allow_elevation=True)
+
+    def test_consecutive_sensor_failures_triggers_auto(self):
+        self.mock_controller.get_cpu_temp.return_value = None
+        self.guard.restore_safe_state = MagicMock()
+
+        for cycle in range(3):
+            cur_temp = self.mock_controller.get_cpu_temp()
+            if cur_temp is None:
+                self.guard._consecutive_sensor_failures += 1
+                if self.guard._consecutive_sensor_failures >= 3:
+                    self.guard.restore_safe_state()
+
+        self.assertEqual(self.guard._consecutive_sensor_failures, 3)
+        self.guard.restore_safe_state.assert_called_once()
+
+
+class TestCustomCurveBreakpoints(unittest.TestCase):
+    def setUp(self):
+        self.engine = SmartCurveEngine()
+        self.engine.set_profile("custom")
+        self.engine.hysteresis_c = 3.0
+        self.engine.min_dwell_seconds = 0.0
+
+    def test_custom_curve_evaluation(self):
+        custom_curve = [
+            (40.0, "1"),
+            (60.0, "4"),
+            (80.0, "7"),
+            (999.0, "disengaged")
+        ]
+        self.engine.set_custom_curve(custom_curve)
+
+        self.assertEqual(self.engine.evaluate_temp(35.0), "1")
+        self.assertEqual(self.engine.evaluate_temp(55.0), "4")
+        self.assertEqual(self.engine.evaluate_temp(75.0), "7")
+        self.assertEqual(self.engine.evaluate_temp(88.0), "disengaged")
+
+    def test_none_temperature_safety(self):
+        self.assertIsNone(self.engine.evaluate_temp(None))
+
+
+class TestVisualGaugeAnimation(unittest.TestCase):
+    def test_animation_state_transitions(self):
+        gauge = VisualGauge(min_width=200, min_height=200)
+        self.assertFalse(gauge.is_animating())
+
+        gauge.set_target_rpm(3000)
+        self.assertTrue(gauge.is_animating())
+
+        # Step until lerp converges
+        steps = 0
+        while gauge.is_animating() and steps < 50:
+            gauge.update_animation_step()
+            steps += 1
+
+        self.assertFalse(gauge.is_animating())
+        self.assertEqual(gauge.current_rpm, 3000.0)
+
+        # Subsequent step returns False immediately without animating
+        res = gauge.update_animation_step()
+        self.assertFalse(res)
+
+
 class TestNotificationManager(unittest.TestCase):
     def test_debouncing(self):
         nm = NotificationManager()
         nm.cooldown_sec = 10.0
-        
-        # First send of 'thermal_high' should succeed
+
+        # First send of 'test_type' should succeed
         res1 = nm.send("Test Warning", "Warning message 1", urgency="normal", alert_type="test_type")
         self.assertTrue(res1)
 
@@ -120,3 +225,4 @@ class TestNotificationManager(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -12,48 +12,56 @@ class ControlPanel(Gtk.Box):
         self,
         on_level_selected: Callable[[str], None],
         on_open_curve_dialog: Optional[Callable[[], None]] = None,
-        on_open_dust_purge: Optional[Callable[[], None]] = None
+        on_open_dust_purge: Optional[Callable[[], None]] = None,
+        on_open_sensor_dialog: Optional[Callable[[], None]] = None
     ):
-        super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=12)
+        super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.on_level_selected = on_level_selected
         self.on_open_curve_dialog = on_open_curve_dialog
         self.on_open_dust_purge = on_open_dust_purge
+        self.on_open_sensor_dialog = on_open_sensor_dialog
         self._updating_internally = False
 
         # 1. Preset Profiles Section
-        preset_header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        preset_header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         lbl_title = Gtk.Label(label="FAN CONTROL PRESETS")
         lbl_title.get_style_context().add_class("section-title")
         preset_header.pack_start(lbl_title, False, False, 0)
 
-        # Header Action Buttons: Smart Curve & Dust Purge
+        # Header Action Buttons: Dust Purge, Smart Curve & Sensors
         btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         
         if self.on_open_dust_purge:
-            btn_purge = Gtk.Button(label="Dust Purge")
+            btn_purge = Gtk.Button(label="Purge (40s)")
             btn_purge.get_style_context().add_class("btn-purge-action")
             btn_purge.connect("clicked", lambda b: self.on_open_dust_purge())
             btn_box.pack_start(btn_purge, False, False, 0)
 
         if self.on_open_curve_dialog:
-            btn_curve = Gtk.Button(label="Smart Curve")
+            btn_curve = Gtk.Button(label="Curves")
             btn_curve.get_style_context().add_class("btn-curve-action")
             btn_curve.connect("clicked", lambda b: self.on_open_curve_dialog())
             btn_box.pack_start(btn_curve, False, False, 0)
+
+        if self.on_open_sensor_dialog:
+            btn_sens = Gtk.Button(label="Sensors")
+            btn_sens.get_style_context().add_class("btn-toggle-sensors")
+            btn_sens.connect("clicked", lambda b: self.on_open_sensor_dialog())
+            btn_box.pack_start(btn_sens, False, False, 0)
 
         preset_header.pack_end(btn_box, False, False, 0)
         self.pack_start(preset_header, False, False, 0)
 
         # Preset Buttons Grid
         presets_grid = Gtk.Grid()
-        presets_grid.set_column_spacing(10)
-        presets_grid.set_row_spacing(10)
+        presets_grid.set_column_spacing(6)
+        presets_grid.set_row_spacing(6)
         presets_grid.set_column_homogeneous(True)
 
-        self.btn_auto = self._create_preset_btn("Auto (BIOS)", "Default firmware curve", "auto", "emerald-dot")
-        self.btn_silent = self._create_preset_btn("Silent", "Level 1 (~1900 RPM)", "1", "cyan-dot")
-        self.btn_balanced = self._create_preset_btn("Balanced", "Level 4 (~3300 RPM)", "4", "amber-dot")
-        self.btn_turbo = self._create_preset_btn("Turbo / Max", "Level 7 / Disengaged", "disengaged", "red-dot")
+        self.btn_auto = self._create_preset_btn("Auto (BIOS)", "Default curve", "auto", "emerald-dot")
+        self.btn_silent = self._create_preset_btn("Silent", "L1 (~1900)", "1", "cyan-dot")
+        self.btn_balanced = self._create_preset_btn("Balanced", "L4 (~3300)", "4", "amber-dot")
+        self.btn_turbo = self._create_preset_btn("Turbo / Max", "L7 / Diseng", "disengaged", "red-dot")
 
         presets_grid.attach(self.btn_auto, 0, 0, 1, 1)
         presets_grid.attach(self.btn_silent, 1, 0, 1, 1)

@@ -9,7 +9,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![GTK 3](https://img.shields.io/badge/GUI-GTK%203-darkgreen.svg)](https://www.gtk.org/)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20ThinkPad-red.svg)](https://www.thinkwiki.org/wiki/Thinkpad-acpi)
-[![Release](https://img.shields.io/badge/release-v1.1.0-orange.svg)](https://github.com/s47user/thinkpad-fan-control/releases/tag/v1.1.0)
+[![Release](https://img.shields.io/badge/release-v1.2.0-orange.svg)](https://github.com/s47user/thinkpad-fan-control/releases/tag/v1.2.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>

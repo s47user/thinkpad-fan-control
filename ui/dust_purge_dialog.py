@@ -270,12 +270,14 @@ class DustPurgeDialog(Gtk.Dialog):
         rpm = status.get("speed", 0)
 
         self.val_rpm.set_text(f"{rpm:,} RPM")
-        self.val_temp.set_text(f"{temp_c:.1f}°C")
-
-        # Emergency Thermal Safety Check
-        if temp_c >= 80.0:
-            self._abort_purge(reason=f"Emergency auto-abort: CPU reached {temp_c:.1f}°C!")
-            return False
+        if temp_c is not None:
+            self.val_temp.set_text(f"{temp_c:.1f}°C")
+            # Emergency Thermal Safety Check
+            if temp_c >= 80.0:
+                self._abort_purge(reason=f"Emergency auto-abort: CPU reached {temp_c:.1f}°C!")
+                return False
+        else:
+            self.val_temp.set_text("--.-°C")
 
         # Pulse Cycle Logic: 4 cycles of 10 seconds
         # 0s - 6s: Burst ('disengaged')

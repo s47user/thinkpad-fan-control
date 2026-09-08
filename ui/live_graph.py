@@ -15,7 +15,7 @@ class LiveGraph(Gtk.Image):
     Dynamically renders to allocated dimensions.
     """
 
-    def __init__(self, min_width: int = 380, min_height: int = 180, history_len: int = HISTORY_SECONDS):
+    def __init__(self, min_width: int = 210, min_height: int = 65, history_len: int = HISTORY_SECONDS):
         super().__init__()
         self.min_width = min_width
         self.min_height = min_height
@@ -65,10 +65,11 @@ class LiveGraph(Gtk.Image):
         cr.set_source_rgba(0.08, 0.09, 0.12, 1.0) # #14161f
         cr.paint()
 
-        margin_left = 34.0
-        margin_right = 14.0
-        margin_top = 16.0
-        margin_bottom = 20.0
+        is_compact = h < 110
+        margin_left = 26.0 if is_compact else 34.0
+        margin_right = 8.0 if is_compact else 14.0
+        margin_top = 8.0 if is_compact else 16.0
+        margin_bottom = 10.0 if is_compact else 20.0
 
         plot_w = max(10.0, w - margin_left - margin_right)
         plot_h = max(10.0, h - margin_top - margin_bottom)
@@ -81,7 +82,7 @@ class LiveGraph(Gtk.Image):
         # Vertical Time Grid Lines (Adaptive intervals across history)
         cr.set_line_width(0.8)
         cr.set_source_rgba(0.18, 0.22, 0.30, 0.25)
-        num_v = max(6, int(plot_w / 70.0))
+        num_v = max(4 if is_compact else 6, int(plot_w / 70.0))
         for t_step in range(1, num_v):
             vx = margin_left + (plot_w / float(num_v)) * t_step
             cr.move_to(vx, margin_top)
@@ -89,11 +90,18 @@ class LiveGraph(Gtk.Image):
             cr.stroke()
 
         # 2. Horizontal Reference Lines & Labels
-        axis_font_size = max(9, min(12, int(plot_h * 0.024)))
+        axis_font_size = max(8, min(10, int(plot_h * 0.18))) if is_compact else max(9, min(12, int(plot_h * 0.024)))
         cr.select_font_face("Ubuntu Sans Mono", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         cr.set_font_size(axis_font_size)
 
-        temp_refs = [40.0, 50.0, 60.0, 70.0, 80.0, 85.0] if plot_h > 240 else [40.0, 55.0, 70.0, 85.0]
+        if plot_h > 240:
+            temp_refs = [40.0, 50.0, 60.0, 70.0, 80.0, 85.0]
+        elif plot_h > 100:
+            temp_refs = [40.0, 55.0, 70.0, 85.0]
+        elif plot_h > 50:
+            temp_refs = [45.0, 65.0, 85.0]
+        else:
+            temp_refs = [50.0, 85.0]
 
         for temp_ref in temp_refs:
             y_norm = 1.0 - ((temp_ref - self.min_temp) / (self.max_temp - self.min_temp))
@@ -124,9 +132,9 @@ class LiveGraph(Gtk.Image):
 
         # 3. Draw Fan Speed Curve (Emerald Line with Dash Pattern)
         step_x = plot_w / float(self.history_len - 1)
-        rpm_line_w = max(1.8, min(3.0, plot_h * 0.005))
+        rpm_line_w = 1.2 if is_compact else max(1.8, min(3.0, plot_h * 0.005))
         cr.set_line_width(rpm_line_w)
-        cr.set_dash([5.0, 2.5])
+        cr.set_dash([4.0, 2.0] if is_compact else [5.0, 2.5])
         cr.set_source_rgba(0.06, 0.73, 0.50, 0.90)
 
         last_rpm_x = margin_left
@@ -147,7 +155,7 @@ class LiveGraph(Gtk.Image):
 
         # Small End-point Indicator Node on Fan Curve
         cr.set_source_rgba(0.06, 0.73, 0.50, 1.0)
-        cr.arc(last_rpm_x, last_rpm_y, max(2.5, min(5.0, plot_h * 0.007)), 0, 2 * math.pi)
+        cr.arc(last_rpm_x, last_rpm_y, 2.0 if is_compact else max(2.5, min(5.0, plot_h * 0.007)), 0, 2 * math.pi)
         cr.fill()
 
         # 4. Draw CPU Temperature Curve (Cyan Waveform with Neon Bloom)
@@ -175,12 +183,12 @@ class LiveGraph(Gtk.Image):
         cr.fill_preserve()
 
         # Pass 1: Neon Bloom Glow Pass
-        cr.set_line_width(max(6.0, min(12.0, plot_h * 0.018)))
+        cr.set_line_width(4.0 if is_compact else max(6.0, min(12.0, plot_h * 0.018)))
         cr.set_source_rgba(0.0, 0.88, 1.0, 0.20)
         cr.stroke_preserve()
 
         # Pass 2: Crisp Core Trace Line
-        cr.set_line_width(max(2.0, min(4.0, plot_h * 0.006)))
+        cr.set_line_width(1.6 if is_compact else max(2.0, min(4.0, plot_h * 0.006)))
         cr.set_source_rgba(0.0, 0.92, 1.0, 0.98)
         cr.stroke()
 

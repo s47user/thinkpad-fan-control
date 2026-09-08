@@ -6,7 +6,9 @@ from typing import Callable, Optional
 from .fan_controller import FanController
 
 CRITICAL_TEMP_CELSIUS = 85.0
+EXTREME_TEMP_CELSIUS = 90.0
 WATCHDOG_PING_INTERVAL_SEC = 4.0
+MAX_SENSOR_READ_FAILURES = 3
 
 class SafetyGuard:
     """
@@ -21,6 +23,8 @@ class SafetyGuard:
         self._running = False
         self._thread: Optional[threading.Thread] = None
         self._critical_limit = CRITICAL_TEMP_CELSIUS
+        self._extreme_limit = EXTREME_TEMP_CELSIUS
+        self._consecutive_sensor_failures = 0
 
         atexit.register(self.restore_safe_state)
         try:
@@ -62,16 +66,31 @@ class SafetyGuard:
                 if self.watchdog_enabled and self.controller.is_writable():
                     self.controller.set_watchdog(10)
 
-                # 2. Thermal threshold check
+                # 2. Thermal threshold & sensor sanity check
                 cur_temp = self.controller.get_cpu_temp()
-                if cur_temp >= self._critical_limit:
-                    status = self.controller.get_fan_status()
-                    cur_level = str(status.get("level", "auto")).lower()
-                    if cur_level in ["0", "1", "2", "3"]:
-                        print(f"SafetyGuard ALERT: Critical temp {cur_temp}°C! Overriding level {cur_level} -> auto / level 7")
-                        self.controller.set_level("7", allow_elevation=True)
-                        if self.on_emergency_override:
-                            self.on_emergency_override(cur_temp)
+                if cur_temp is None:
+                    self._consecutive_sensor_failures += 1
+                    if self._consecutive_sensor_failures >= MAX_SENSOR_READ_FAILURES:
+                        print(f"SafetyGuard WARNING: Sensor unreadable for {self._consecutive_sensor_failures} cycles. Restoring BIOS 'auto'.")
+                        self.restore_safe_state()
+                else:
+                    self._consecutive_sensor_failures = 0
+                    if cur_temp >= self._extreme_limit:
+                        status = self.controller.get_fan_status()
+                        cur_level = str(status.get("level", "auto")).lower()
+                        if cur_level not in ["disengaged", "full-speed"]:
+                            print(f"SafetyGuard ALERT: EXTREME temp {cur_temp}°C! Overriding level {cur_level} -> disengaged")
+                            self.controller.set_level("disengaged", allow_elevation=True)
+                            if self.on_emergency_override:
+                                self.on_emergency_override(cur_temp)
+                    elif cur_temp >= self._critical_limit:
+                        status = self.controller.get_fan_status()
+                        cur_level = str(status.get("level", "auto")).lower()
+                        if cur_level in ["0", "1", "2", "3", "4", "5", "6", "auto"]:
+                            print(f"SafetyGuard ALERT: Critical temp {cur_temp}°C! Overriding level {cur_level} -> level 7")
+                            self.controller.set_level("7", allow_elevation=True)
+                            if self.on_emergency_override:
+                                self.on_emergency_override(cur_temp)
             except Exception as e:
                 print(f"SafetyGuard loop exception: {e}")
 

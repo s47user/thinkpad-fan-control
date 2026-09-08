@@ -12,7 +12,7 @@ class VisualGauge(Gtk.Image):
     Dynamically responds to container resizing.
     """
 
-    def __init__(self, min_width: int = 240, min_height: int = 200, max_rpm: int = 5500):
+    def __init__(self, min_width: int = 175, min_height: int = 145, max_rpm: int = 5500):
         super().__init__()
         self.min_width = min_width
         self.min_height = min_height
@@ -22,6 +22,7 @@ class VisualGauge(Gtk.Image):
         self.current_rpm = 0.0
         self.target_rpm = 0.0
         self.level_label = "Auto (BIOS)"
+        self._is_animating = False
 
         self.set_size_request(min_width, min_height)
         self.set_hexpand(False)
@@ -43,23 +44,31 @@ class VisualGauge(Gtk.Image):
             self.height = h
             self.redraw()
 
+    def is_animating(self) -> bool:
+        return self._is_animating
+
     def set_target_rpm(self, rpm: float, level_str: str = ""):
-        self.target_rpm = float(max(0, min(6500, rpm)))
+        new_target = float(max(0, min(6500, rpm)))
         if level_str:
             self.level_label = level_str
-        self.redraw()
+        if abs(new_target - self.target_rpm) > 1.0:
+            self.target_rpm = new_target
+            self._is_animating = True
+            self.redraw()
 
     def update_animation_step(self) -> bool:
         """Smoothly lerps current_rpm towards target_rpm."""
+        if not self._is_animating:
+            return False
         diff = self.target_rpm - self.current_rpm
         if abs(diff) > 1.0:
             self.current_rpm += diff * 0.18
             self.redraw()
             return True
         else:
-            if self.current_rpm != self.target_rpm:
-                self.current_rpm = self.target_rpm
-                self.redraw()
+            self.current_rpm = self.target_rpm
+            self._is_animating = False
+            self.redraw()
             return False
 
     def redraw(self):
@@ -76,7 +85,7 @@ class VisualGauge(Gtk.Image):
         cx = w / 2.0
         cy = h / 2.0 + 2.0
         radius = min(w * 0.38, h * 0.36, 125.0)
-        scale = max(0.90, min(1.30, radius / 95.0))
+        scale = max(0.55, min(1.30, radius / 95.0))
 
         start_angle = math.pi * 0.75
         end_angle = math.pi * 2.25

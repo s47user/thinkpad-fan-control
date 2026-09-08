@@ -105,8 +105,9 @@ class TrayIndicator:
         menu.show_all()
         self.indicator.set_menu(menu)
 
-    def update_telemetry(self, temp_c: float, rpm: int, level_str: str):
+    def update_telemetry(self, temp_c: Optional[float], rpm: int, level_str: str):
         if not self.is_available or not self.indicator:
             return
-        label_text = f"{int(round(temp_c))}°C | {rpm:,} RPM [{level_str}]"
+        temp_str = f"{int(round(temp_c))}°C" if temp_c is not None else "--°C"
+        label_text = f"{temp_str} | {rpm:,} RPM [{level_str}]"
         self.indicator.set_label(label_text, "99°C | 9999 RPM [disengaged]")

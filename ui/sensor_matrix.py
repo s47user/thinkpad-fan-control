@@ -175,8 +175,8 @@ class SensorMatrixWidget(Gtk.Box):
                 lbl_name.get_style_context().add_class("sensor-name")
                 top_row.pack_start(lbl_name, False, False, 0)
 
-                badge = Gtk.Label(label="COOL")
-                badge.get_style_context().add_class("sensor-badge-cool")
+                badge = Gtk.Label()
+                self._set_temp_badge(badge, temp_val)
                 top_row.pack_end(badge, False, False, 0)
                 box.pack_start(top_row, False, False, 0)
 
@@ -190,17 +190,19 @@ class SensorMatrixWidget(Gtk.Box):
             else:
                 val_lbl, badge = self.sensor_widgets[key]
                 val_lbl.set_text(f"{temp_val:.1f}°C")
+                self._set_temp_badge(badge, temp_val)
 
-                badge.get_style_context().remove_class("sensor-badge-cool")
-                badge.get_style_context().remove_class("sensor-badge-warm")
-                badge.get_style_context().remove_class("sensor-badge-hot")
+    def _set_temp_badge(self, badge: Gtk.Label, temp_val: float):
+        badge.get_style_context().remove_class("sensor-badge-cool")
+        badge.get_style_context().remove_class("sensor-badge-warm")
+        badge.get_style_context().remove_class("sensor-badge-hot")
 
-                if temp_val < 50.0:
-                    badge.get_style_context().add_class("sensor-badge-cool")
-                    badge.set_text("COOL")
-                elif temp_val < 70.0:
-                    badge.get_style_context().add_class("sensor-badge-warm")
-                    badge.set_text("WARM")
-                else:
-                    badge.get_style_context().add_class("sensor-badge-hot")
-                    badge.set_text("HOT")
+        if temp_val < 55.0:
+            badge.get_style_context().add_class("sensor-badge-cool")
+            badge.set_text("COOL")
+        elif temp_val < 75.0:
+            badge.get_style_context().add_class("sensor-badge-warm")
+            badge.set_text("WARM")
+        else:
+            badge.get_style_context().add_class("sensor-badge-hot")
+            badge.set_text("HOT")
