@@ -41,17 +41,20 @@ class TrayIndicator:
 
         if self.is_available:
             try:
-                icon_path = os.path.join(
+                icons_dir = os.path.join(
                     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                    "assets", "icons", "thinkpad-fan.svg"
+                    "assets", "icons"
                 )
-                icon_name = icon_path if os.path.exists(icon_path) else "preferences-system-performance"
-
                 self.indicator = AppIndicator.Indicator.new(
                     "thinkpad-fan-control",
-                    icon_name,
+                    "thinkpad-fan",
                     AppIndicator.IndicatorCategory.HARDWARE
                 )
+                if hasattr(self.indicator, "set_icon_theme_path"):
+                    self.indicator.set_icon_theme_path(icons_dir)
+                if hasattr(self.indicator, "set_title"):
+                    self.indicator.set_title("ThinkPad Fan Control")
+
                 self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
                 self._build_menu()
             except Exception as e:
@@ -61,26 +64,23 @@ class TrayIndicator:
     def _build_menu(self):
         menu = Gtk.Menu()
 
+        # Telemetry header item
+        self.item_header = Gtk.MenuItem(label="ThinkPad Fan Control")
+        self.item_header.set_sensitive(False)
+        menu.append(self.item_header)
+
+        menu.append(Gtk.SeparatorMenuItem())
+
         item_show = Gtk.MenuItem(label="Open Fan Control Window")
         item_show.connect("activate", lambda w: self.on_toggle_window())
         menu.append(item_show)
 
-        if self.on_open_dust_purge or self.on_open_curve_dialog:
-            menu.append(Gtk.SeparatorMenuItem())
-
-            if self.on_open_dust_purge:
-                item_purge = Gtk.MenuItem(label="Start Fan Dust Purge...")
-                item_purge.connect("activate", lambda w: self.on_open_dust_purge())
-                menu.append(item_purge)
-
-            if self.on_open_curve_dialog:
-                item_curve = Gtk.MenuItem(label="Smart Curve Profiles...")
-                item_curve.connect("activate", lambda w: self.on_open_curve_dialog())
-                menu.append(item_curve)
+        if hasattr(self.indicator, "set_secondary_activate_target"):
+            self.indicator.set_secondary_activate_target(item_show)
 
         menu.append(Gtk.SeparatorMenuItem())
 
-        item_auto = Gtk.MenuItem(label="Auto (BIOS)")
+        item_auto = Gtk.MenuItem(label="Auto (BIOS Firmware)")
         item_auto.connect("activate", lambda w: self.on_select_preset("auto"))
         menu.append(item_auto)
 
@@ -96,9 +96,22 @@ class TrayIndicator:
         item_turbo.connect("activate", lambda w: self.on_select_preset("disengaged"))
         menu.append(item_turbo)
 
+        if self.on_open_dust_purge or self.on_open_curve_dialog:
+            menu.append(Gtk.SeparatorMenuItem())
+
+            if self.on_open_curve_dialog:
+                item_curve = Gtk.MenuItem(label="Smart Curve Profiles...")
+                item_curve.connect("activate", lambda w: self.on_open_curve_dialog())
+                menu.append(item_curve)
+
+            if self.on_open_dust_purge:
+                item_purge = Gtk.MenuItem(label="Start Fan Dust Purge...")
+                item_purge.connect("activate", lambda w: self.on_open_dust_purge())
+                menu.append(item_purge)
+
         menu.append(Gtk.SeparatorMenuItem())
 
-        item_quit = Gtk.MenuItem(label="Quit (Restore Auto)")
+        item_quit = Gtk.MenuItem(label="Quit Application (Restore Auto)")
         item_quit.connect("activate", lambda w: self.on_quit())
         menu.append(item_quit)
 
@@ -111,3 +124,5 @@ class TrayIndicator:
         temp_str = f"{int(round(temp_c))}°C" if temp_c is not None else "--°C"
         label_text = f"{temp_str} | {rpm:,} RPM [{level_str}]"
         self.indicator.set_label(label_text, "99°C | 9999 RPM [disengaged]")
+        if hasattr(self, "item_header"):
+            self.item_header.set_label(f"ThinkPad Fan Control — {label_text}")

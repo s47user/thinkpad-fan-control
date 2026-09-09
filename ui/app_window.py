@@ -495,6 +495,37 @@ button.adw-btn-abort:hover {
 .btn-unlock:hover {
     background-color: #f6d32d;
 }
+
+button.btn-mini {
+    background-image: none;
+    background-color: #363636;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+}
+
+button.btn-mini:hover {
+    background-image: none;
+    background-color: #444444;
+}
+
+button.btn-del {
+    background-image: none;
+    background-color: rgba(224, 27, 36, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(224, 27, 36, 0.35);
+    border-radius: 6px;
+    padding: 3px 8px;
+}
+
+button.btn-del:hover {
+    background-image: none;
+    background-color: rgba(224, 27, 36, 0.35);
+    color: #ffffff;
+}
 """
 
 class AppWindow(Gtk.Window):
@@ -632,6 +663,11 @@ class AppWindow(Gtk.Window):
         btn_reset.connect("clicked", lambda w: (self._on_level_command("auto"), popover.popdown()))
         pop_box.pack_start(btn_reset, False, False, 0)
 
+        btn_curves = Gtk.ModelButton(text="Configure Thermal Curves & Thresholds...")
+        btn_curves.get_style_context().add_class("popover-action-btn")
+        btn_curves.connect("clicked", lambda w: (self.switch_to_page("curves"), popover.popdown()))
+        pop_box.pack_start(btn_curves, False, False, 0)
+
         btn_purge = Gtk.ModelButton(text="Start 40s Dust Purge Routine")
         btn_purge.get_style_context().add_class("popover-action-btn")
         btn_purge.connect("clicked", lambda w: (self._open_dust_purge_dialog(), popover.popdown()))
@@ -645,6 +681,20 @@ class AppWindow(Gtk.Window):
         btn_about.get_style_context().add_class("popover-action-btn")
         btn_about.connect("clicked", lambda w: (self._show_about_dialog(), popover.popdown()))
         pop_box.pack_start(btn_about, False, False, 0)
+
+        sep3 = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+        sep3.get_style_context().add_class("adw-row-separator")
+        pop_box.pack_start(sep3, False, False, 3)
+
+        btn_pref = Gtk.ModelButton(text="Reset Exit Dialog Choice")
+        btn_pref.get_style_context().add_class("popover-action-btn")
+        btn_pref.connect("clicked", lambda w: (self._reset_exit_preference(), popover.popdown()))
+        pop_box.pack_start(btn_pref, False, False, 0)
+
+        btn_quit = Gtk.ModelButton(text="Quit Application (Restore Auto)")
+        btn_quit.get_style_context().add_class("popover-action-btn")
+        btn_quit.connect("clicked", lambda w: (popover.popdown(), self._on_app_quit()))
+        pop_box.pack_start(btn_quit, False, False, 0)
 
         pop_box.show_all()
         popover.add(pop_box)
@@ -813,6 +863,8 @@ class AppWindow(Gtk.Window):
         self.present()
 
     def _on_curve_profile_changed(self, profile_name: str):
+        if profile_name == "auto":
+            self.controller.set_level("auto")
         self._on_sensor_tick()
 
     def _on_purge_completed(self):
@@ -841,6 +893,14 @@ class AppWindow(Gtk.Window):
 
     def _on_level_command(self, level_str: str):
         try:
+            if level_str == "auto":
+                self.curve_engine.set_profile("auto")
+                if hasattr(self, "curves_view"):
+                    self.curves_view.sync_active_profile("auto")
+            else:
+                self.curve_engine.set_manual_mode()
+                if hasattr(self, "curves_view"):
+                    self.curves_view.sync_active_profile("auto")
             self.controller.set_level(level_str)
             self._update_perm_banner()
             self._on_sensor_tick()
@@ -897,7 +957,10 @@ class AppWindow(Gtk.Window):
                     print(f"Error applying curve target level {target_level}: {e}")
             profile_display = f"Curve: {self.curve_engine.active_profile.upper()}"
         else:
-            profile_display = "Auto (BIOS)"
+            if level_str == "auto":
+                profile_display = "Auto (BIOS)"
+            else:
+                profile_display = f"Manual (Level {level_str.upper()})"
 
         # 4. Thermal Warning Notification (>82°C, debounced to 60s cooldown)
         if temp_c is not None and temp_c >= 82.0:
@@ -934,22 +997,68 @@ class AppWindow(Gtk.Window):
             self.present()
 
     def _on_close_event(self, widget, event):
-        """Minimizes to system tray instead of destroying the application."""
-        self.hide()
-        if not self._has_shown_tray_hint:
-            self._has_shown_tray_hint = True
-            self.notifier.send(
-                "Running in Background",
-                "ThinkPad Fan Control is still active in the system tray.",
-                urgency="low",
-                alert_type="tray_hint"
-            )
-        return True
+        """
+        Handles window close / exit requests.
+        Prompts user with a dialog to choose between minimizing to tray
+        or completely closing the app, unless a preference was remembered.
+        """
+        close_pref = getattr(self.curve_engine, "close_action", "ask")
+        tray_ok = hasattr(self, "tray") and self.tray and self.tray.is_available
+
+        if close_pref == "tray" and tray_ok:
+            self.hide()
+            return True
+        elif close_pref == "quit":
+            self._on_app_quit()
+            return False
+
+        from .exit_dialog import ExitConfirmationDialog, RESPONSE_TRAY, RESPONSE_QUIT
+        dialog = ExitConfirmationDialog(parent_window=self, tray_available=tray_ok)
+        resp = dialog.run()
+        remember = dialog.get_remember_choice()
+
+        if resp == RESPONSE_TRAY:
+            if remember:
+                self.curve_engine.close_action = "tray"
+                self.curve_engine.save_config()
+            dialog.destroy()
+            self.hide()
+            if not self._has_shown_tray_hint:
+                self._has_shown_tray_hint = True
+                self.notifier.send(
+                    "Running in Background",
+                    "ThinkPad Fan Control is still active in the system tray.",
+                    urgency="low",
+                    alert_type="tray_hint"
+                )
+            return True
+        elif resp == RESPONSE_QUIT:
+            if remember:
+                self.curve_engine.close_action = "quit"
+                self.curve_engine.save_config()
+            dialog.destroy()
+            self._on_app_quit()
+            return False
+        else:
+            # User clicked Cancel or dismissed the dialog
+            dialog.destroy()
+            return True
+
+    def _reset_exit_preference(self):
+        """Resets exit confirmation behavior back to always ask."""
+        self.curve_engine.close_action = "ask"
+        self.curve_engine.save_config()
+        self.notifier.send(
+            "Exit Preference Reset",
+            "ThinkPad Fan Control will now ask before minimizing or quitting.",
+            urgency="low",
+            alert_type="general"
+        )
 
     def _on_app_quit(self):
         """Fully exits the application, restoring BIOS fan control."""
         try:
             self.safety.cleanup()
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Safety cleanup error: {e}")
         Gtk.main_quit()

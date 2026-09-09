@@ -57,6 +57,9 @@ class SmartCurveEngine:
         self.ac_profile: str = "balanced"
         self.battery_profile: str = "silent"
 
+        # Window exit behavior: 'ask', 'tray', 'quit'
+        self.close_action: str = "ask"
+
         # Internal state tracking
         self.current_level: str = "auto"
         self.last_step_down_time: float = 0.0
@@ -146,6 +149,11 @@ class SmartCurveEngine:
             self.is_curve_active = (profile_name != "auto")
             self.save_config()
 
+    def set_manual_mode(self):
+        """Disables smart curve evaluation to honor manual speed selection."""
+        self.is_curve_active = False
+        self.save_config()
+
     def set_custom_curve(self, curve: List[Tuple[float, str]]):
         """Sets custom user breakpoints: list of (max_temp, level)."""
         sorted_curve = sorted(curve, key=lambda x: x[0])
@@ -164,6 +172,7 @@ class SmartCurveEngine:
                     self.auto_power_switching = data.get("auto_power_switching", True)
                     self.ac_profile = data.get("ac_profile", "balanced")
                     self.battery_profile = data.get("battery_profile", "silent")
+                    self.close_action = data.get("close_action", "ask")
                     if "custom_curve" in data:
                         self.profiles["custom"] = [(float(t), str(l)) for t, l in data["custom_curve"]]
         except Exception as e:
@@ -180,6 +189,7 @@ class SmartCurveEngine:
                 "auto_power_switching": self.auto_power_switching,
                 "ac_profile": self.ac_profile,
                 "battery_profile": self.battery_profile,
+                "close_action": self.close_action,
                 "custom_curve": self.profiles.get("custom", DEFAULT_PROFILES["custom"])
             }
             with open(CONFIG_FILE, "w") as f:

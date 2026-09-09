@@ -3,7 +3,7 @@ gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
 from gi.repository import Gtk, GLib
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from backend import FanController, SafetyGuard
 from ui.app_window import AppWindow
@@ -257,6 +257,114 @@ class TestModernLibadwaitaUI(unittest.TestCase):
         check_widget_labels(self.window.curves_view)
         check_widget_labels(self.window.cleaning_view)
         check_widget_labels(self.window.sensors_view)
+
+    def test_exit_confirmation_dialog_structure(self):
+        """Verify ExitConfirmationDialog elements, buttons, and response behavior."""
+        from ui.exit_dialog import ExitConfirmationDialog, RESPONSE_TRAY, RESPONSE_QUIT, RESPONSE_CANCEL
+        dlg = ExitConfirmationDialog(parent_window=self.window, tray_available=True)
+        self.assertTrue(dlg.btn_tray.get_sensitive())
+        self.assertTrue(dlg.btn_quit.get_sensitive())
+        self.assertFalse(dlg.get_remember_choice())
+        dlg.chk_remember.set_active(True)
+        self.assertTrue(dlg.get_remember_choice())
+        dlg.destroy()
+
+        # When tray is unavailable, minimize button is disabled
+        dlg_no_tray = ExitConfirmationDialog(parent_window=self.window, tray_available=False)
+        self.assertFalse(dlg_no_tray.btn_tray.get_sensitive())
+        dlg_no_tray.destroy()
+
+    def test_close_event_handling_preferences(self):
+        """Verify window close event respects close_action preferences."""
+        # When close_action is "tray", window hides directly
+        self.window.curve_engine.close_action = "tray"
+        res_tray = self.window._on_close_event(self.window, None)
+        self.assertTrue(res_tray)
+        self.assertFalse(self.window.is_visible())
+
+        # When close_action is "quit", calls _on_app_quit
+        self.window.curve_engine.close_action = "quit"
+        with patch.object(self.window, "_on_app_quit") as mock_quit:
+            res_quit = self.window._on_close_event(self.window, None)
+            self.assertFalse(res_quit)
+            mock_quit.assert_called_once()
+
+        # Reset preference
+        self.window._reset_exit_preference()
+        self.assertEqual(self.window.curve_engine.close_action, "ask")
+
+    def test_safety_guard_cleanup_method(self):
+        """Verify safety.cleanup() alias calls restore_safe_state and stop."""
+        with patch.object(self.safety, "restore_safe_state") as mock_restore, \
+             patch.object(self.safety, "stop") as mock_stop:
+            self.safety.cleanup()
+            mock_restore.assert_called_once()
+            mock_stop.assert_called_once()
+
+    def test_auto_mode_prevents_temperature_override(self):
+        """Verify setting auto deactivates curve and prevents temperature rise from overriding auto."""
+        # First enable a curve
+        self.window.curve_engine.set_profile("balanced")
+        self.assertTrue(self.window.curve_engine.is_curve_active)
+
+        # Now set back to auto
+        self.window._on_level_command("auto")
+        self.assertFalse(self.window.curve_engine.is_curve_active)
+        self.assertEqual(self.window.curve_engine.active_profile, "auto")
+        self.controller.set_level.assert_called_with("auto")
+
+        # Clear mock call history
+        self.controller.set_level.reset_mock()
+
+        # Simulate temperature rise to 75°C
+        self.controller.get_cpu_temp = MagicMock(return_value=75.0)
+        self.controller.get_fan_status = MagicMock(return_value={"speed": 3400, "level": "auto"})
+
+        # Sensor tick runs
+        self.window._on_sensor_tick()
+
+        # Controller set_level must NOT have been called (no curve override!)
+        self.controller.set_level.assert_not_called()
+
+    def test_manual_mode_prevents_temperature_override(self):
+        """Verify setting a manual speed deactivates curve so temp rise does not override manual level."""
+        self.window.curve_engine.set_profile("balanced")
+        self.assertTrue(self.window.curve_engine.is_curve_active)
+
+        # User chooses manual level 3
+        self.window._on_level_command("3")
+        self.assertFalse(self.window.curve_engine.is_curve_active)
+        self.controller.set_level.assert_called_with("3")
+
+        # Clear mock call history
+        self.controller.set_level.reset_mock()
+
+        # Temperature rises to 70°C
+        self.controller.get_cpu_temp = MagicMock(return_value=70.0)
+        self.controller.get_fan_status = MagicMock(return_value={"speed": 2900, "level": "3"})
+
+        # Sensor tick runs
+        self.window._on_sensor_tick()
+
+        # Must not have been overridden by curve
+        self.controller.set_level.assert_not_called()
+
+    def test_custom_curve_configuration_and_presets(self):
+        """Verify custom curve radio selection, customize preset, and breakpoint rows."""
+        curves = self.window.curves_view
+
+        # Switch to custom
+        curves.radio_custom.set_active(True)
+        self.assertEqual(self.window.curve_engine.active_profile, "custom")
+        self.assertTrue(self.window.curve_engine.is_curve_active)
+
+        # Customize preset
+        curves._on_customize_preset("silent")
+        self.assertEqual(self.window.curve_engine.active_profile, "custom")
+        custom_points = self.window.curve_engine.profiles["custom"]
+        self.assertTrue(len(custom_points) >= 3)
+        self.assertEqual(custom_points[0][1], "0")  # Silent starts at level 0
+
 
 if __name__ == "__main__":
     unittest.main()

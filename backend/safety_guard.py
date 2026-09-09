@@ -55,6 +55,11 @@ class SafetyGuard:
         except Exception as e:
             print(f"SafetyGuard cleanup error: {e}")
 
+    def cleanup(self):
+        """Ensures safe hardware state and terminates watchdog thread."""
+        self.restore_safe_state()
+        self.stop()
+
     def _handle_signal(self, signum, frame):
         self.restore_safe_state()
         exit(0)
