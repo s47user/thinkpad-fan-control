@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=ThinkPad Fan Control
+GenericName=Fan Speed Controller
+Comment=Hardware fan control, live RPM gauges, and thermal monitoring for ThinkPad
+Exec=thinkpad-fan-control
+Icon=thinkpad-fan
+Terminal=false
+Categories=System;HardwareSettings;Settings;
+StartupNotify=true
+StartupWMClass=thinkpad-fan-control
+Keywords=thinkpad;fan;thermal;cooling;speed;sensors;temperature;
