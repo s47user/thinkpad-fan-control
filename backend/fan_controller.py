@@ -17,6 +17,7 @@ class FanController:
     def __init__(self, fan_path: str = FAN_PROC_PATH):
         self.fan_path = fan_path
         self._cached_coretemp_path: Optional[str] = None
+        self._elevation_failed: bool = False
 
     def is_fan_control_enabled(self) -> bool:
         """Checks if thinkpad_acpi fan_control parameter is Y."""
@@ -40,9 +41,15 @@ class FanController:
         try:
             cmd = ["pkexec", "chmod", "666", self.fan_path]
             res = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-            return res.returncode == 0 and self.is_writable()
+            if res.returncode == 0 and self.is_writable():
+                self._elevation_failed = False
+                return True
+            else:
+                self._elevation_failed = True
+                return False
         except Exception as e:
             print(f"Error requesting elevation via pkexec: {e}")
+            self._elevation_failed = True
             return False
 
     def get_fan_status(self) -> Dict[str, Any]:
@@ -159,19 +166,26 @@ class FanController:
             except Exception as e:
                 print(f"Error direct-writing to {self.fan_path}: {e}")
 
-        if not allow_elevation:
+        if not allow_elevation or getattr(self, "_elevation_failed", False):
             return False
 
-        # Fallback to pkexec
-        try:
-            res = subprocess.run(
-                ["pkexec", "sh", "-c", f"echo 'level {level}' > {self.fan_path}"],
-                capture_output=True, text=True, timeout=10
-            )
-            return res.returncode == 0
-        except Exception as e:
-            print(f"Elevation command failed: {e}")
+        # If kernel driver fan control is not enabled, elevation will always fail with EPERM.
+        # Avoid prompting the user for PIN when the kernel driver cannot accept writes.
+        if not self.is_fan_control_enabled():
             return False
+
+        # Attempt to unlock permissions ONCE so that all subsequent writes are direct
+        # without repeatedly popping up Polkit PIN dialogs.
+        if self.unlock_permissions():
+            try:
+                with open(self.fan_path, "w") as f:
+                    f.write(cmd_str)
+                    f.flush()
+                return True
+            except Exception as e:
+                print(f"Error direct-writing to {self.fan_path} after unlock: {e}")
+
+        return False
 
     def set_watchdog(self, timeout_sec: int = 10) -> bool:
         """

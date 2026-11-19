@@ -277,6 +277,7 @@ class TestModernLibadwaitaUI(unittest.TestCase):
     def test_close_event_handling_preferences(self):
         """Verify window close event respects close_action preferences."""
         # When close_action is "tray", window hides directly
+        self.window.tray.is_available = True
         self.window.curve_engine.close_action = "tray"
         res_tray = self.window._on_close_event(self.window, None)
         self.assertTrue(res_tray)

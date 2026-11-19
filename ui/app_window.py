@@ -885,6 +885,7 @@ class AppWindow(Gtk.Window):
 
     def _on_unlock_permissions(self, btn):
         btn.set_sensitive(False)
+        self.controller._elevation_failed = False
         success = self.controller.unlock_permissions()
         if success:
             self._update_perm_banner()
@@ -951,7 +952,7 @@ class AppWindow(Gtk.Window):
             target_level = self.curve_engine.evaluate_temp(temp_c)
             if target_level is not None and target_level != level_str:
                 try:
-                    self.controller.set_level(target_level)
+                    self.controller.set_level(target_level, allow_elevation=False)
                     level_str = target_level
                 except Exception as e:
                     print(f"Error applying curve target level {target_level}: {e}")

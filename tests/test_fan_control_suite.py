@@ -223,6 +223,40 @@ class TestNotificationManager(unittest.TestCase):
         self.assertTrue(res3)
 
 
+class TestElevationGuard(unittest.TestCase):
+    def setUp(self):
+        self.controller = FanController(fan_path="/tmp/fake_thinkpad_fan")
+
+    def test_elevation_skipped_when_driver_disabled(self):
+        self.controller.is_writable = lambda: False
+        self.controller.is_fan_control_enabled = lambda: False
+        self.controller.unlock_permissions = lambda: self.fail("unlock_permissions should not be called")
+
+        # Must not call unlock_permissions or elevation
+        res = self.controller.set_level("3", allow_elevation=True)
+        self.assertFalse(res)
+
+    def test_elevation_not_spammed_after_failure(self):
+        self.controller.is_writable = lambda: False
+        self.controller.is_fan_control_enabled = lambda: True
+        call_count = [0]
+        def mock_unlock():
+            call_count[0] += 1
+            self.controller._elevation_failed = True
+            return False
+        self.controller.unlock_permissions = mock_unlock
+
+        # First call triggers unlock and fails
+        res1 = self.controller.set_level("3", allow_elevation=True)
+        self.assertFalse(res1)
+        self.assertEqual(call_count[0], 1)
+
+        # Second call must NOT re-attempt elevation
+        res2 = self.controller.set_level("4", allow_elevation=True)
+        self.assertFalse(res2)
+        self.assertEqual(call_count[0], 1)
+
+
 if __name__ == "__main__":
     unittest.main()
 
